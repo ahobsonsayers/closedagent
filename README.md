@@ -14,6 +14,8 @@ While this is not a perfect solution, it significantly reduces the blast radius 
 
 This image is designed to be an easy-to-use, extensible, and batteries-included base to build other images upon which different agents run
 
+## **Contents** <!-- omit from toc -->
+
 - [**Features**](#features)
 - [**Usage**](#usage)
   - [**Entrypoint**](#entrypoint)
