@@ -28,7 +28,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 
 - Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun and gh (GitHub CLI).
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended) or `apt` at runtime
-- Surprisingly Small - despite all the above, the image is only ~500MB
+- Surprisingly Small - despite all the above, the image is only ~200MB compressed
 - Does not run as root - agents shouldn't need to run as superuser, but has...
 - Passwordless sudo - for those rare occasions you _do_ need root
 
