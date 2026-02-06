@@ -14,8 +14,8 @@ if [ -n "$BREW_PACKAGES" ]; then
 fi
 
 echo "Fixing permissions"
-sudo chown -R "$(id -u):$(id -g)" "$HOME"/workspace
 sudo chown -R "$(id -u):$(id -g)" "$HOME"/.config
-sudo chown -R "$(id -u):$(id -g)" "$HOME"/.local/share 
+sudo chown -R "$(id -u):$(id -g)" "$HOME"/.local 
+sudo chown -R "$(id -u):$(id -g)" "$HOME"/workspace
 
 exec "$@"
