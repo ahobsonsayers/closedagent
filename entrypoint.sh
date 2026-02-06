@@ -1,16 +1,16 @@
 #!/bin/bash
 set -e
 
-echo "Installing apt packages"
 if [ -n "$APT_PACKAGES" ]; then
+  echo "Installing apt packages"
   sudo apt-get update
   sudo apt-get install -y $APT_PACKAGES
   sudo rm -rf /var/lib/apt/lists/*
   echo
 fi
 
-echo "Installing brew packages"
 if [ -n "$BREW_PACKAGES" ]; then
+  echo "Installing brew packages"
   brew install $BREW_PACKAGES
   echo
 fi
