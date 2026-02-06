@@ -1,26 +1,34 @@
 # **ClosedAgent**
 
-A base docker image designed to be used to create isolated sandboxed environments for running LLM/AI agents like [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw)
+ClosedAgent is base docker image designed to be used to create isolated sandboxed environments for running LLM/AI agents like [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw)
 
 This is the base image for the closedagent ecosystem, and is used as the base image for [closedcode](https://github.com/ahobsonsayers/closedcode), [closedclaw](https://github.com/ahobsonsayers/closedclaw), and [closedchamber](https://github.com/ahobsonsayers/closedchamber) images
 
-## **Why?**
+## **Why?** <!-- omit from toc -->
 
 LLM/AI agents are awesome for automation and improving productivity. They are very powerful, but in the words of Uncle Ben - "With great power, comes great responsibility".
 
-The responsible thing to do when using these agents is to run them in isolated sandboxed environments such as a docker container.
+So naturally, it is therefore a good idea to run these agents in isolated sandboxed environments - such as a docker container.
 
-While this is not a perfect solution, it significantly reduces the blast radius when they do something dumb - no-one wants to see `rm -rf /` being executed on their host machine.
+While this is not a perfect solution, it significantly reduces the blast radius when they do something dumb - no-one wants to see `rm -rf /` being executed on their host machine!
 
-This image is therefore designed to be an easy-to-use, extensible, and batteries-included base to build other images upon which different agents run
+This image is designed to be an easy-to-use, extensible, and batteries-included base to build other images upon which different agents run
+
+- [**Features**](#features)
+- [**Usage**](#usage)
+  - [**Entrypoint**](#entrypoint)
+  - [**Installing** `apt` **packages**](#installing-apt-packages)
+- [**Runtime**](#runtime)
+  - [**Workspace**](#workspace)
+  - [**Installing packages**](#installing-packages)
 
 ## **Features**
 
 - Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun and gh (GitHub CLI).
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended) or `apt` at runtime
+- Surprisingly Small - despite all the above, the image is only ~500MB
 - Does not run as root - agents shouldn't need to run as superuser, but has...
 - Passwordless sudo - for those rare occasions you _do_ need root
-- Surprisingly Small - despite all the above, the image is only ~500MB
 
 ## **Usage**
 
