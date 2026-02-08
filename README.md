@@ -80,5 +80,6 @@ To utilize this feature, set:
 
 - `APT_PACKAGES` environment variable to install `apt` packages
 - `BREW_PACKAGES` environment variable to install `brew` packages (recommended)
+- `BUN_PACKAGES` environment variable to install `bun` packages globally
 
 Packages should be space separated, so it is important that the values are quoted.

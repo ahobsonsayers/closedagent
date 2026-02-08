@@ -15,6 +15,12 @@ if [ -n "$BREW_PACKAGES" ]; then
   echo
 fi
 
+if [ -n "$BUN_PACKAGES" ]; then
+  echo "Installing bun packages"
+  bun install -g $BUN_PACKAGES
+  echo
+fi
+
 fix_perms() {
   local path="$1"
   local user="$(id -u)"
