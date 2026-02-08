@@ -69,4 +69,7 @@ RUN mkdir -p \
 # Add .local bin to path
 ENV PATH=$HOME/.local/bin:$PATH
 
+# Set working directory
+WORKDIR "$HOME/workspace"
+
 ENTRYPOINT ["/entrypoint.sh", "/bin/bash"]
