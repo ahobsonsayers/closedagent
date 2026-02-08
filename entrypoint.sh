@@ -15,10 +15,22 @@ if [ -n "$BREW_PACKAGES" ]; then
   echo
 fi
 
+fix_perms() {
+  local path="$1"
+  local user="$(id -u)"
+  local group="$(id -g)"
+  
+  if [ -d "$path" ]; then
+    sudo find "$path" -mindepth 1 \
+      \( ! -user "$user" -o ! -group "$group" \) \
+      -exec chown "$user:$group" -- {} +
+  fi
+}
+
 echo "Fixing permissions"
-sudo chown -R "$(id -u):$(id -g)" "$HOME"/.config
-sudo chown -R "$(id -u):$(id -g)" "$HOME"/.local
-sudo chown -R "$(id -u):$(id -g)" "$HOME"/workspace
+fix_perms "$HOME"/.config
+fix_perms "$HOME"/.local
+fix_perms "$HOME"/workspace
 echo
 
 echo "Running:"
