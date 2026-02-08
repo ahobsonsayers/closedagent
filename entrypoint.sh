@@ -50,4 +50,4 @@ echo "Running:"
 echo "$@"
 echo
 
-exec "$@"
+exec $@
