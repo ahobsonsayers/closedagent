@@ -20,7 +20,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - [Usage (for building)](#usage-for-building)
   - [Working Directory](#working-directory)
   - [Entrypoint](#entrypoint)
-  - [Installing `apt` packages](#installing-apt-packages)
+  - [Installing `apt` packages during build](#installing-apt-packages-during-build)
 - [Running](#running)
   - [Workspace](#workspace)
   - [Installing packages](#installing-packages)
@@ -62,7 +62,7 @@ For example, if you want to run python at start, modify ENTRYPOINT to be:
 ENTRYPOINT ["/ENTRYPOINT.sh", "python"]
 ```
 
-### Installing `apt` packages
+### Installing `apt` packages during build
 
 If you need to install new packages from `apt` during image build, use `sudo`.
 
