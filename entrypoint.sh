@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 strip_quotes() {
@@ -11,9 +11,13 @@ strip_quotes() {
 }
 
 fix_perms() {
-  local path="$1"
-  local user="$(id -u)"
-  local group="$(id -g)"
+  local path
+  local user
+  local group
+
+  path="$1"
+  user="$(id -u)"
+  group="$(id -g)"
 
   sudo find "$path" -mindepth 1 \
     \( ! -user "$user" -o ! -group "$group" \) \
