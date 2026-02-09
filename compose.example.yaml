@@ -1,0 +1,19 @@
+services:
+  closedagent:
+    container_name: closedagent
+    image: arranhs/closedagent:latest # Runs /bin/bash by default
+    command: ["-c", "echo sleeping && sleep infinity"]
+    volumes:
+      - ./workspace:/home/agent/workspace # Workspace files
+      - closedagent-brew:/home/linuxbrew # Persist installed brew packages
+      - closedagent-bun:/home/agent/.bun # Persist installed bun packages
+      - closedagent-apt-cache:/var/cache/apt/archives # Persist apt package cache
+    environment:
+      - BREW_PACKAGES="go gopls"
+      - BUN_PACKAGES="@biomejs/biome prettier"
+      - APT_PACKAGES="python3 python3-pip"
+
+volumes:
+  closedagent-brew:
+  closedagent-bun:
+  closedagent-apt-cache:
