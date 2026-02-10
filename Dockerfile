@@ -57,8 +57,8 @@ RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH=$HOME/.bun/bin:$PATH
 
 # Copy entrypoint scripts
-COPY --chown=agent:agent entrypoint.sh /entrypoint.sh
-COPY --chown=agent:agent entrypoint.d /entrypoint.d
+COPY --chown=agent:agent ./entrypoint.sh /entrypoint.sh
+COPY --chown=agent:agent ./entrypoint.d /entrypoint.d
 RUN chmod +x /entrypoint.sh
 
 # Create some standard folders
