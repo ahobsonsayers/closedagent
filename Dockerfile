@@ -63,9 +63,10 @@ RUN chmod +x /entrypoint.sh
 
 # Create some standard folders
 RUN mkdir -p \
+    ~/workspace \
     ~/.config \
-    ~/.local \
-    ~/workspace
+    ~/.local/bin \
+    ~/.local/share
 
 # Add .local bin to path
 ENV PATH=$HOME/.local/bin:$PATH
