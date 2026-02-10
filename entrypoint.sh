@@ -8,4 +8,8 @@ for script in /entrypoint.d/*; do
 	fi
 done
 
-exec $@
+echo "Running:"
+echo "$@"
+echo
+
+exec "$@"
