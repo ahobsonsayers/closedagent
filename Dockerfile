@@ -43,7 +43,6 @@ COPY ./entrypoint.d /entrypoint.d
 RUN \ 
     # Create some standard folders
     mkdir -p \
-    /tmp \
     "$HOME/workspace" \
     "$HOME/.config" \
     "$HOME/.local/bin" \
@@ -52,7 +51,6 @@ RUN \
     chown -R agent:agent \
     /entrypoint.sh \
     /entrypoint.d \
-    /tmp \
     "$HOME" && \
     # Make entrypoint scripts executable
     chmod +x /entrypoint.sh /entrypoint.d/*
