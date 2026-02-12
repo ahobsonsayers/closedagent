@@ -57,7 +57,7 @@ RUN \
 
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
-    chown -R "$(id -u):$(id -g)" /home/linuxbrew/.linuxbrew && \
+    chown -R agent:agent /home/linuxbrew/.linuxbrew && \
     curl -L https://github.com/Homebrew/brew/tarball/main | \
     tar xz --strip-components 1 -C /home/linuxbrew/.linuxbrew
 
