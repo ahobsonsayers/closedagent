@@ -57,9 +57,9 @@ RUN \
 
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
-    chown -R agent:agent /home/linuxbrew/.linuxbrew && \
-    curl -L https://github.com/Homebrew/brew/tarball/main | \
-    tar xz --strip-components 1 -C /home/linuxbrew/.linuxbrew
+    curl -L --progress-bar https://github.com/Homebrew/brew/tarball/main | \
+    tar xz --strip-components 1 -C /home/linuxbrew/.linuxbrew && \
+    chown -R agent:agent /home/linuxbrew
 
 # Set required homebrew environment variables
 ENV HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
