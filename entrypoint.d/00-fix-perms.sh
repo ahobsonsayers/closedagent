@@ -2,17 +2,17 @@
 set -euo pipefail
 
 fix_perms() {
-	local path
-	local user
-	local group
+  local path
+  local user
+  local group
 
-	path="$1"
-	user="$(id -u)"
-	group="$(id -g)"
+  path="$1"
+  user="$(id -u)"
+  group="$(id -g)"
 
-	sudo find "$path" -mindepth 1 \
-		\( ! -user "$user" -o ! -group "$group" \) \
-		-exec chown "$user:$group" -- {} +
+  sudo find "$path" -mindepth 1 \
+    \( ! -user "$user" -o ! -group "$group" \) \
+    -exec chown "$user:$group" -- {} +
 }
 
 echo "Fixing permissions"

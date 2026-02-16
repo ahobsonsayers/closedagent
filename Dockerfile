@@ -35,15 +35,30 @@ RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/agent && \
     chmod 0440 /etc/sudoers.d/agent
 
-# Change to "agent" user
-USER agent
-WORKDIR "$HOME"
+# Copy entrypoint scripts
+COPY ./entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.d /entrypoint.d
+
+RUN \ 
+    # Create some standard folders
+    mkdir -p \
+    "$HOME/workspace" \
+    "$HOME/.config" \
+    "$HOME/.local/bin" \
+    "$HOME/.local/share" && \
+    # Fix permissions
+    chown -R agent:agent \
+    /entrypoint.sh \
+    /entrypoint.d \
+    "$HOME" && \
+    # Make entrypoint scripts executable
+    chmod +x /entrypoint.sh /entrypoint.d/*
 
 # Install homebrew (using tar for small size)
-RUN sudo mkdir -p /home/linuxbrew/.linuxbrew && \
-    sudo chown -R "$(id -u):$(id -g)" /home/linuxbrew/.linuxbrew && \
-    curl -L https://github.com/Homebrew/brew/tarball/main | \
-    tar xz --strip-components 1 -C /home/linuxbrew/.linuxbrew
+RUN mkdir -p /home/linuxbrew/.linuxbrew && \
+    curl -L --progress-bar https://github.com/Homebrew/brew/tarball/main | \
+    tar xz --strip-components 1 -C /home/linuxbrew/.linuxbrew && \
+    chown -R agent:agent /home/linuxbrew
 
 # Set required homebrew environment variables
 ENV HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
@@ -51,20 +66,13 @@ ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
 
+# Change to "agent" user
+USER agent
+WORKDIR "$HOME"
+
 # Install bun
 RUN curl -fsSL https://bun.sh/install | bash
 ENV PATH=$HOME/.bun/bin:$PATH
-
-# Copy entrypoint scripts
-COPY --chown=agent:agent entrypoint.sh /entrypoint.sh
-COPY --chown=agent:agent entrypoint.d /entrypoint.d
-RUN chmod +x /entrypoint.sh
-
-# Create some standard folders
-RUN mkdir -p \
-    ~/.config \
-    ~/.local \
-    ~/workspace
 
 # Add .local bin to path
 ENV PATH=$HOME/.local/bin:$PATH
