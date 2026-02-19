@@ -20,6 +20,7 @@ RUN apt-get update && \
     sed \
     sudo \
     tar \
+    tini \
     unzip \
     util-linux \
     wget \
@@ -81,4 +82,5 @@ ENV PATH=$HOME/.local/bin:$PATH
 # Set working directory
 WORKDIR "$HOME/workspace"
 
-ENTRYPOINT ["/entrypoint.sh", "/bin/bash"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash"]

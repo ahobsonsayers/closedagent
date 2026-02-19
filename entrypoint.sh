@@ -12,4 +12,4 @@ echo "Running:"
 echo "$@"
 echo
 
-exec "$@"
+exec /usr/bin/tini -- "$@"
