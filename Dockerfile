@@ -81,5 +81,5 @@ ENV PATH=$HOME/.local/bin:$PATH
 # Set working directory
 WORKDIR "$HOME/workspace"
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/entrypoint.sh"]
 CMD ["/bin/bash"]
