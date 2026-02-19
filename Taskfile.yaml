@@ -13,7 +13,7 @@ tasks:
 
   build:
     cmds:
-      - docker build . --tag arranhs/closedagent:latest \
+      - docker build . --tag arranhs/closedagent:latest
 
   run:
     cmds:
