@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM debian:stable-slim
 
 # Set environment variables
 ENV HOME=/home/agent
@@ -27,9 +27,8 @@ RUN apt-get update && \
     zip && \
     rm -rf /var/lib/apt/lists/*
 
-# Remove ubuntu user and home
-RUN rm -rf /root && \
-    userdel --remove ubuntu
+# Remove root directory
+RUN rm -rf /root
 
 # Create "agent" user and home
 # This user will have root access via passwordless sudo
