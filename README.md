@@ -1,16 +1,16 @@
 # ClosedAgent
 
-ClosedAgent is a base docker image designed to be used to create isolated sandboxed environments for running LLM/AI agents like [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw).
+ClosedAgent is a base docker image designed to be used to create isolated sandboxe environments for running LLM/AI agents like Claude Code, [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw).
 
 This is the base image for the closedagent ecosystem, and is used as the base image for [closedcode](https://github.com/ahobsonsayers/closedcode), [closedclaw](https://github.com/ahobsonsayers/closedclaw), and [closedchamber](https://github.com/ahobsonsayers/closedchamber) images.
 
 ## Why? <!-- omit from toc -->
 
-LLM/AI agents are awesome for automation and improving productivity. They are very powerful, but in the words of Uncle Ben - "With great power, comes great responsibility."
+LLM/AI agents are great tools for automation and improving productivity. They are super powerful! But to quote Uncle Ben - "With great power, comes great responsibility".
 
-So naturally, it is therefore a good idea to run these agents in isolated sandboxed environments - such as a docker container.
+Therefore it is very good idea to run these agents in an isolated sandbox environment - such as a docker container.
 
-While this is not a perfect solution, it significantly reduces the blast radius when they do something dumb - no-one wants to see `rm -rf /` being executed on their host machine!
+While this is not a perfect solution, it significantly reduces the blast radius when they do something dumb - no one wants to see `rm -rf /` being executed on their host machine!
 
 This image is designed to be an easy-to-use, extensible, and batteries-included base to build other images upon which different agents run.
 
