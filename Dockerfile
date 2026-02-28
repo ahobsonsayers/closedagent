@@ -72,10 +72,11 @@ USER agent
 WORKDIR "$HOME"
 
 # Install bun
-RUN curl -fsSL https://bun.sh/install | bash
-ENV PATH=$HOME/.bun/bin:$PATH
+RUN curl -fsSL https://bun.sh/install | bash && \
+    ln -s $HOME/.bun/bin/bun $HOME/.bun/bin/node
 
-# Add .local bin to path
+# Add directories to PATH
+ENV PATH=$HOME/.bun/bin:$PATH
 ENV PATH=$HOME/.local/bin:$PATH
 
 # Set working directory
