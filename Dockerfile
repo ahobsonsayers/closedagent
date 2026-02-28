@@ -37,7 +37,7 @@ RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
     chmod 0440 /etc/sudoers.d/agent
 
 # Copy entrypoint scripts
-COPY ./entrypoint.sh /entrypoint.sh
+COPY ./scripts/entrypoint.sh /entrypoint.sh
 COPY ./entrypoint.d /entrypoint.d
 
 RUN \ 
