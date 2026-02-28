@@ -10,7 +10,7 @@ on:
       - entrypoint.d/**
       - scripts/**
   schedule:
-    - cron: "0 12 * * *" # Everyday at 12am
+    - cron: "0 * * 0" # Everyweek on Sunday at 12am
   workflow_dispatch:
     inputs:
       no-cache:
