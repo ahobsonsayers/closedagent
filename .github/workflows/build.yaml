@@ -126,5 +126,6 @@ jobs:
             -t "$DOCKER_IMAGE:$CALVER" \
             $DIGESTS
         env:
+          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
           DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
           CALVER: ${{ needs.get-calver.outputs.calver }}
