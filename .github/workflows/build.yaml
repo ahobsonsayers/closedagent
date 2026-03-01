@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       no-cache:
-        description: Disable docker build cache
+        description: No Cache
         type: boolean
         default: false
 
