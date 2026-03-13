@@ -17,6 +17,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 ## Contents <!-- omit from toc -->
 
 - [Features](#features)
+- [Monorepo](#monorepo)
 - [Usage (for building)](#usage-for-building)
   - [Working Directory](#working-directory)
   - [Entrypoint](#entrypoint)
@@ -33,6 +34,17 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
 - Does not run as root - agents shouldn't need to run as superuser. This being said, the image does have...
 - Passwordless sudo - for those rare occasions you _do_ need root.
+
+## Monorepo
+
+This repository contains:
+
+- **closedagent**: Base Docker image with development tools
+- **opencode**: OpenCode AI sandboxed Docker image (extends closedagent)
+
+Both images are built using reusable GitHub Actions workflows.
+
+See individual directories for more information.
 
 ## Usage (for building)
 
