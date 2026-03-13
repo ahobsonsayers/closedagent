@@ -1,0 +1,16 @@
+services:
+  opencode:
+    container_name: opencode
+    image: arranhs/opencode:latest
+    build:
+      context: .
+    command: ["opencode", "web", "--hostname", "0.0.0.0", "--port", "4096"]
+    restart: unless-stopped
+    ports:
+      - 4096:4096
+    volumes:
+      - ./workspace:/home/agent/workspace
+      - ~/.config/opencode:/home/agent/.config/opencode
+      - ~/.local/share/opencode:/home/agent/.local/share/opencode
+      - ~/.gitconfig:/home/agent/.gitconfig
+      - ~/.config/gh:/home/agent/.config/gh
