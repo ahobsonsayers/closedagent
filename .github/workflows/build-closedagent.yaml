@@ -1,0 +1,30 @@
+name: Build and Push closedagent Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-closedagent.yaml
+      - .github/workflows/docker-build.yaml
+      - Dockerfile
+      - entrypoint.d/**
+      - scripts/**
+  schedule:
+    - cron: 0 0 * * 0
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      image_name: arranhs/closedagent
+      context_path: .
+      trigger_paths: ".github/workflows/build-closedagent.yaml,.github/workflows/docker-build.yaml,Dockerfile,entrypoint.d/**,scripts/**"
+      tag_strategy: calver
+    secrets: inherit

@@ -1,0 +1,28 @@
+name: Build and Push opencode Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-opencode.yaml
+      - .github/workflows/docker-build.yaml
+      - opencode/**
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      image_name: arranhs/opencode
+      context_path: opencode
+      trigger_paths: ".github/workflows/build-opencode.yaml,.github/workflows/docker-build.yaml,opencode/**"
+      tag_strategy: opencode-version
+    secrets: inherit
