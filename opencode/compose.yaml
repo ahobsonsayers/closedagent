@@ -2,8 +2,6 @@ services:
   opencode:
     container_name: opencode
     image: arranhs/opencode:latest
-    build:
-      context: .
     command: ["opencode", "web", "--hostname", "0.0.0.0", "--port", "4096"]
     restart: unless-stopped
     ports:

@@ -20,11 +20,29 @@ on:
         default: false
 
 jobs:
+  get-tags:
+    name: Get Tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tags: ${{ steps.get-tags.outputs.tags }}
+
+    steps:
+      - name: Get CalVer tags
+        id: get-tags
+        run: |
+          CALVER=$(date -u +"%Y.%m.%d")
+          echo "tags=latest" >> $GITHUB_OUTPUT
+          echo "tags>>${CALVER}" >> $GITHUB_OUTPUT
+          echo "Tags:"
+          echo "latest"
+          echo "${CALVER}"
+
   build:
+    needs: get-tags
     uses: ./.github/workflows/docker-build.yaml
     with:
       image_name: arranhs/closedagent
       context_path: .
-      trigger_paths: ".github/workflows/build-closedagent.yaml,.github/workflows/docker-build.yaml,Dockerfile,entrypoint.d/**,scripts/**"
-      tag_strategy: calver
+      tags: ${{ needs.get-tags.outputs.tags }}
     secrets: inherit

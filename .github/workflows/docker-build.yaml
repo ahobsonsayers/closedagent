@@ -11,51 +11,15 @@ on:
         description: Build context path (e.g., . or opencode)
         type: string
         default: .
-      trigger_paths:
-        description: Comma-separated paths that trigger builds
+      tags:
+        description: Newline-separated list of tags (e.g., "latest\n2025.03.13")
         type: string
         required: true
-      tag_strategy:
-        description: Tag strategy (calver or opencode-version)
-        type: string
-        required: true
-      schedule_cron:
-        description: Cron schedule for automated builds
-        type: string
-        default: ""
 
 env:
   DOCKER_IMAGE: ${{ inputs.image_name }}
 
 jobs:
-  get-version-info:
-    name: Get version info
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    outputs:
-      calver: ${{ steps.get-calver.outputs.calver }}
-      opencode-version: ${{ steps.get-opencode-version.outputs.opencode-version }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Get CalVer
-        if: inputs.tag_strategy == 'calver'
-        id: get-calver
-        run: |
-          CALVER=$(date -u +"%Y.%m.%d")
-          echo "calver=$CALVER" >> $GITHUB_OUTPUT
-          echo "CalVer: $CALVER"
-
-      - name: Get OpenCode version
-        if: inputs.tag_strategy == 'opencode-version'
-        id: get-opencode-version
-        run: |
-          OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | cut -d '=' -f2)
-          echo "opencode-version=$OPENCODE_VERSION" >> $GITHUB_OUTPUT
-          echo "OpenCode Version: $OPENCODE_VERSION"
-
   build:
     name: Build Image
     strategy:
@@ -107,7 +71,7 @@ jobs:
   push-tags:
     name: Push Tags
     runs-on: ubuntu-latest
-    needs: [get-version-info, build]
+    needs: build
     timeout-minutes: 10
 
     steps:
@@ -126,9 +90,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Push tags with CalVer
-        if: inputs.tag_strategy == 'calver'
+      - name: Push tags
         run: |
+          # Parse newline-separated tags into array
+          TAGS_ARRAY=()
+          while IFS= read -r tag; do
+            [ -n "$tag" ] && TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${tag}")
+          done <<< "${TAGS_INPUT}"
+
           DIGESTS=$(
             echo "$DIGESTS_JSON" |
             jq -r --arg docker_image "$DOCKER_IMAGE" \
@@ -136,28 +105,9 @@ jobs:
           )
 
           docker buildx imagetools create \
-            -t "$DOCKER_IMAGE:latest" \
-            -t "$DOCKER_IMAGE:$CALVER" \
+            "${TAGS_ARRAY[@]}" \
             $DIGESTS
         env:
           DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
           DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-          CALVER: ${{ needs.get-version-info.outputs.calver }}
-
-      - name: Push tags with version
-        if: inputs.tag_strategy == 'opencode-version'
-        run: |
-          DIGESTS=$(
-            echo "$DIGESTS_JSON" |
-            jq -r --arg docker_image "$DOCKER_IMAGE" \
-              '.digest | to_entries[] | "\($docker_image)@\(.value)"'
-          )
-
-          docker buildx imagetools create \
-            -t "$DOCKER_IMAGE:latest" \
-            -t "$DOCKER_IMAGE:$OPENCODE_VERSION" \
-            $DIGESTS
-        env:
-          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-          OPENCODE_VERSION: ${{ needs.get-version-info.outputs.opencode-version }}
+          TAGS_INPUT: ${{ inputs.tags }}
