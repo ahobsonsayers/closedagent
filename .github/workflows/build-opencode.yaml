@@ -27,17 +27,16 @@ jobs:
 
     steps:
       - name: Checkout code
+        id: checkout-code
         uses: actions/checkout@v6
 
       - name: Get OpenCode version tags
         id: get-tags
         run: |
           OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | cut -d '=' -f2)
-          echo "tags=latest" >> $GITHUB_OUTPUT
-          echo "tags>>${OPENCODE_VERSION}" >> $GITHUB_OUTPUT
-          echo "Tags:"
-          echo "latest"
-          echo "${OPENCODE_VERSION}"
+          TAGS="latest ${OPENCODE_VERSION}"
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "Tags: ${TAGS}"
 
   build:
     needs: get-tags

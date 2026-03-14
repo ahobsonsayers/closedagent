@@ -38,19 +38,22 @@ jobs:
 
     steps:
       - name: Checkout code
+        id: checkout-code
         uses: actions/checkout@v6
 
-      - name: Set up buildx
+      - name: Setup Buildx
+        id: setup-buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to DockerHub
+        id: login-dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push digest
-        id: build
+        id: build-and-push
         uses: docker/build-push-action@v6
         with:
           context: ${{ inputs.context_path }}
@@ -61,12 +64,13 @@ jobs:
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
 
       - name: Output digest
+        id: output-digest
         uses: GoCodeAlone/github-action-matrix-outputs-write@1.0.3
         with:
           matrix-step-name: build
           matrix-key: ${{ matrix.platform-slug }}
           outputs: |
-            digest: ${{ steps.build.outputs.digest }}
+            digest: ${{ steps.build-and-push.outputs.digest }}
 
   push-tags:
     name: Push Tags
@@ -75,7 +79,8 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Set up Buildx
+      - name: Setup Buildx
+        id: setup-buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Get digests
@@ -85,18 +90,23 @@ jobs:
           matrix-step-name: build
 
       - name: Login to DockerHub
+        id: login-dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Push tags
+        id: push-tags
+        env:
+          DOCKER_IMAGE: ${{ inputs.image_name }}
+          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
+          TAGS_INPUT: ${{ inputs.tags }}
         run: |
-          # Parse newline-separated tags into array
           TAGS_ARRAY=()
-          while IFS= read -r tag; do
-            [ -n "$tag" ] && TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${tag}")
-          done <<< "${TAGS_INPUT}"
+          while IFS= read -r TAG; do
+            [ -n "$TAG" ] && TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${TAG}")
+          done <<<"$TAGS_INPUT"
 
           DIGESTS=$(
             echo "$DIGESTS_JSON" |
@@ -107,7 +117,9 @@ jobs:
           docker buildx imagetools create \
             "${TAGS_ARRAY[@]}" \
             $DIGESTS
-        env:
-          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-          TAGS_INPUT: ${{ inputs.tags }}
+
+          echo "
+          Output:
+          Pushed tags: ${TAGS_INPUT}
+          Digests: $DIGESTS
+          "
