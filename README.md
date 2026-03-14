@@ -98,6 +98,19 @@ Once the image is running it is possible to connect to the container and execute
 docker exec -it closedagent <your-command>
 ```
 
+### Mounting Credentials
+
+Most agents (including opencode) need access to your SSH keys and GitHub CLI credentials for code operations. Mount these as read-only volumes:
+
+```yaml
+services:
+  agent:
+    volumes:
+      - ~/.gitconfig:/home/agent/.gitconfig:ro     # Git configuration
+      - ~/.ssh:/home/agent/.ssh:ro               # SSH keys
+      - ~/.config/gh:/home/agent/.config/gh:ro   # GitHub CLI credentials
+```
+
 ### Workspace
 
 The default workspace for agents run using this image is `/home/agent/workspace`.

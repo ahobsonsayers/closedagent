@@ -12,25 +12,10 @@ While this is not a perfect solution, it significantly reduces the blast radius 
 
 ## Contents <!-- omit from toc -->
 
-- [Features](#features)
 - [Usage](#usage)
-- [Persistence and Volumes](#persistence-and-volumes)
-- [Other files e.g. git, gh etc.](#other-files-eg-git-gh-etc)
-- [Installing Additional Packages](#installing-additional-packages)
-  - [Why is installation by `brew` recommended?](#why-is-installation-by-brew-recommended)
 - [Web UI](#web-ui)
   - [Environment Variables](#environment-variables)
 - [Extending](#extending)
-
-## Features
-
-There are a few docker images for opencode out there, so what makes this one different?
-
-- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun and gh (GitHub CLI).
-- Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended) or `apt` at runtime
-- Surprisingly Small - despite all the above, the image is only ~400MB compressed
-- Does not run as root - agents shouldn't need to run as superuser, but has...
-- Passwordless sudo - for those rare occasions you _do_ need root
 
 ## Usage
 
@@ -43,76 +28,6 @@ For your current working directory, this command is:
 ```bash
 docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/opencode:latest
 ```
-
-## Persistence and Volumes
-
-By default, both opencode config and opencode sessions will be persisted across runs of the container; however, you might want to mount these to your host machine if you want easy access to the config files (for editing), or if you want to share config and state with opencode that you might run outside of this sandbox.
-
-To mount these folders, you can run:
-
-```bash
-docker run -it --rm \
-  -v "$(pwd):/home/agent/workspace" \
--v "<config-path>:/home/agent/.config/opencode" \
-  -v "<data-path>:/home/agent/.local/share/opencode" \
-arranhs/opencode:latest
-```
-
-For example, if you want to use config and data used by opencode running on your local machine, run:
-
-```bash
-docker run -it --rm \
-  -v "$(pwd):/home/agent/workspace" \
--v "$HOME/.config/opencode:/home/agent/.config/opencode" \
-  -v "$HOME/.local/share/opencode:/home/agent/.local/share/opencode" \
-arranhs/opencode:latest
-```
-
-## Other files e.g. git, gh etc.
-
-To get the most out of opencode running in this sandbox, it is likely you also want to mount additional files from your local machine - such as your git config and GitHub credentials from using the GitHub CLI (using the `gh` CLI to auth with GitHub is highly recommended for ease).
-
-For these files, it is recommended to mount them as read-only.
-
-To do this, you can run opencode with:
-
-```bash
-docker run -it --rm \
-  -v "$(pwd):/home/agent/workspace" \
--v "$HOME/.config/opencode:/home/agent/.config/opencode" \
-  -v "$HOME/.local/share/opencode:/home/agent/.local/share/opencode" \
--v "$HOME/.gitconfig:/home/agent/.gitconfig:ro" \
-  -v "$HOME/.ssh:/home/agent/.ssh:ro" \
--v "$HOME/.config/gh:/home/agent/.config/gh:ro" \
-  arranhs/opencode:latest
-```
-
-## Installing Additional Packages
-
-You can install additional packages at container startup using environment variables.
-
-This is useful when you need languages or tools that aren't included in the base image.
-
-You can set:
-
-- `APT_PACKAGES` environment variable to install `apt` packages
-- `BREW_PACKAGES` environment variable to install `brew` packages (recommended)
-
-Packages should be space separated, so remember to quote your values.
-
-For example, you can run:
-
-```bash
-docker run -it --rm \
-  -v "$(pwd):/home/agent/workspace" \
--e "APT_PACKAGES=python3" \
-  -e "BREW_PACKAGES=node go" \
-arranhs/opencode:latest
-```
-
-### Why is installation by `brew` recommended?
-
-Homebrew has a huge array of tools and packages (~7000), many of which are missing in apt. As such, Homebrew is extremely likely to have the software you require, and its cache is easy to persist, which can be leveraged to make startup installs faster. Info on this to be added.
 
 ## Web UI
 
@@ -127,8 +42,6 @@ services:
   opencode:
     container_name: opencode
     image: arranhs/opencode:latest
-    build:
-      context: .
     command: ["opencode", "web", "--hostname", "0.0.0.0", "--port", "4096"]
     restart: unless-stopped
     ports:
