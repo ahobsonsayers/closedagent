@@ -33,10 +33,10 @@ jobs:
         run: |
           CALVER=$(date -u +"%Y.%m.%d")
           {
-            echo 'tags<<EOF'
-            echo 'latest'
+            echo "tags<<EOF"
+            echo "latest"
             echo "$CALVER"
-            echo 'EOF'
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
           echo "
           Output:

@@ -35,10 +35,10 @@ jobs:
         run: |
           OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | cut -d '=' -f2)
           {
-            echo 'tags<<EOF'
-            echo 'latest'
+            echo "tags<<EOF"
+            echo "latest"
             echo "$OPENCODE_VERSION"
-            echo 'EOF'
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
           echo "
           Output:
