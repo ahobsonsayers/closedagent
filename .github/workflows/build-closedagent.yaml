@@ -32,8 +32,8 @@ jobs:
         id: get-tags
         run: |
           CALVER=$(date -u +"%Y.%m.%d")
-          { echo "latest"; echo "${CALVER}"; } >> $GITHUB_OUTPUT
-          echo "Tags: latest, ${CALVER}"
+          { echo "latest"; echo "$CALVER"; } >> $GITHUB_OUTPUT
+          echo "Tags: latest, $CALVER"
 
   build:
     needs: get-tags

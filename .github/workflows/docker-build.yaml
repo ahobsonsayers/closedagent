@@ -106,7 +106,7 @@ jobs:
           TAGS_ARRAY=()
           while read -r TAG; do
             [ -z "$TAG" ] && continue
-            TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${TAG}")
+            TAGS_ARRAY+=("-t $DOCKER_IMAGE:$TAG")
           done <<<"$TAGS_INPUT"
 
           DIGESTS=$(
@@ -121,6 +121,6 @@ jobs:
 
           echo "
           Output:
-          Pushed tags: ${TAGS_INPUT}
+          Pushed tags: $TAGS_INPUT
           Digests: $DIGESTS
           "
