@@ -104,7 +104,7 @@ jobs:
           TAGS_INPUT: ${{ inputs.tags }}
         run: |
           TAGS_ARRAY=()
-          while IFS= read -r TAG; do
+          while read -r TAG; do
             [ -n "$TAG" ] && TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${TAG}")
           done <<<"$TAGS_INPUT"
 
