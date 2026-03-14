@@ -103,10 +103,10 @@ jobs:
           DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
           TAGS_INPUT: ${{ inputs.tags }}
         run: |
-          TAGS_ARRAY=()
+          TAGS_FLAGS=""
           while read -r TAG; do
             [ -z "$TAG" ] && continue
-            TAGS_ARRAY+=("-t $DOCKER_IMAGE:$TAG")
+            TAGS_FLAGS="$TAGS_FLAGS -t $DOCKER_IMAGE:$TAG"
           done <<<"$TAGS_INPUT"
 
           DIGESTS=$(
@@ -116,7 +116,7 @@ jobs:
           )
 
           docker buildx imagetools create \
-            "${TAGS_ARRAY[@]}" \
+            $TAGS_FLAGS \
             $DIGESTS
 
           echo "
