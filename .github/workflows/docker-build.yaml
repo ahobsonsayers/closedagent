@@ -98,10 +98,6 @@ jobs:
 
       - name: Push tags
         id: push-tags
-        env:
-          DOCKER_IMAGE: ${{ inputs.image_name }}
-          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
-          TAGS_INPUT: ${{ inputs.tags }}
         run: |
           TAGS_FLAGS=""
           while read -r TAG; do
@@ -124,3 +120,7 @@ jobs:
           Pushed tags: $TAGS_INPUT
           Digests: $DIGESTS
           "
+        env:
+          DOCKER_IMAGE: ${{ inputs.image_name }}
+          DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
+          TAGS_INPUT: ${{ inputs.tags }}
