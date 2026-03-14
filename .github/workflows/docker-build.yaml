@@ -105,7 +105,8 @@ jobs:
         run: |
           TAGS_ARRAY=()
           while read -r TAG; do
-            [ -n "$TAG" ] && TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${TAG}")
+            [ -z "$TAG" ] && continue
+            TAGS_ARRAY+=("-t ${DOCKER_IMAGE}:${TAG}")
           done <<<"$TAGS_INPUT"
 
           DIGESTS=$(
