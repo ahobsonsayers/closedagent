@@ -34,8 +34,15 @@ jobs:
         id: get-tags
         run: |
           OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | cut -d '=' -f2)
-          { echo "latest"; echo "$OPENCODE_VERSION"; } >> $GITHUB_OUTPUT
-          echo "Tags: latest, $OPENCODE_VERSION"
+          echo "tags<<EOF" >> $GITHUB_OUTPUT
+          echo "latest" >> $GITHUB_OUTPUT
+          echo "$OPENCODE_VERSION" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "
+          Output:
+          Tags: latest
+               $OPENCODE_VERSION
+          "
 
   build:
     needs: get-tags
