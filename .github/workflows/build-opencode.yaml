@@ -1,0 +1,61 @@
+name: Build and Push opencode Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-opencode.yaml
+      - .github/workflows/docker-build.yaml
+      - opencode/**
+  schedule:
+    - cron: 0 2 * * *
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  get-tags:
+    name: Get Tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tags: ${{ steps.get-tags.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        id: checkout-code
+        uses: actions/checkout@v6
+
+      - name: Get tags
+        id: get-tags
+        run: |
+          OPENCODE_VERSION=$(
+            grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | 
+            cut -d '=' -f2
+          )
+
+          {
+            echo "tags<<EOF"
+            echo "latest"
+            echo "$OPENCODE_VERSION"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+  
+          echo "
+          Output:
+          tags: latest, $OPENCODE_VERSION
+          "
+
+  build:
+    name: Build Image
+    needs: get-tags
+    uses: ./.github/workflows/docker-build.yaml
+    with:
+      image-name: arranhs/opencode
+      context-path: opencode
+      image-tags: ${{ needs.get-tags.outputs.tags }}
+    secrets: inherit

@@ -1,0 +1,71 @@
+name: Update OpenCode Version
+
+on:
+  schedule:
+    - cron: 0 1 * * * # Everyday at 1am
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get current version
+        id: get-current-version
+        run: |
+          OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" Dockerfile | cut -d '=' -f2)
+
+          echo "opencode=$OPENCODE_VERSION" >> $GITHUB_OUTPUT
+
+          echo "
+          Current OpenCode Version: $OPENCODE_VERSION
+          "
+
+      - name: Get latest version
+        id: get-latest-version
+        run: |
+          OPENCODE_LATEST=$(npm view opencode-ai version | tail -n 1)
+
+          echo "opencode=$OPENCODE_LATEST" >> $GITHUB_OUTPUT
+
+          echo "
+          Latest OpenCode Version: $OPENCODE_LATEST
+          "
+
+      - name: Compare and update version
+        id: compare-update
+        run: |
+          if [ "$CURRENT_OPENCODE_VERSION" != "$LATEST_OPENCODE_VERSION" ]; then
+            echo "needs_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs_update=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          CURRENT_OPENCODE_VERSION: ${{ steps.get-current-version.outputs.opencode }}
+          LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
+
+      - name: Update Dockerfile
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          sed -i "s|^ARG OPENCODE_VERSION=.*|ARG OPENCODE_VERSION=$LATEST_OPENCODE_VERSION|" Dockerfile
+        env:
+          LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
+
+      - name: Commit and push
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add Dockerfile
+          git commit -m "Update OpenCode to $OPENCODE_VERSION"
+          git push
+        env:
+          OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}

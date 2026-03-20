@@ -1,0 +1,56 @@
+name: Build and Push closedagent Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-closedagent.yaml
+      - .github/workflows/docker-build.yaml
+      - Dockerfile
+      - entrypoint.d/**
+      - scripts/**
+  schedule:
+    - cron: 0 0 * * 0
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  get-tags:
+    name: Get Tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tags: ${{ steps.get-tags.outputs.tags }}
+
+    steps:
+      - name: Get tags
+        id: get-tags
+        run: |
+          CALVER=$(date -u +"%Y.%m.%d")
+
+          {
+            echo "tags<<EOF"
+            echo "latest"
+            echo "$CALVER"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "
+          Output:
+          tags: latest, $CALVER
+          "
+
+  build:
+    name: Build Image
+    uses: ./.github/workflows/docker-build.yaml
+    needs: get-tags
+    with:
+      image-name: arranhs/closedagent
+      context-path: .
+      image-tags: ${{ needs.get-tags.outputs.tags }}
+    secrets: inherit

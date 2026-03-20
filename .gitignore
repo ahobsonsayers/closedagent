@@ -57,3 +57,6 @@ scratch/
 # Ignore certain files
 .env
 .secrets
+
+# Git worktrees
+.worktrees/
