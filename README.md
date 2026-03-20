@@ -1,14 +1,12 @@
 # ClosedAgent
 
-ClosedAgent is a base docker image designed to be used to create isolated sandboxe environments for running LLM/AI agents like Claude Code, [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw).
-
-This is the base image for the closedagent ecosystem, and is used as the base image for [closedcode](https://github.com/ahobsonsayers/closedcode), [closedclaw](https://github.com/ahobsonsayers/closedclaw), and [closedchamber](https://github.com/ahobsonsayers/closedchamber) images.
+ClosedAgent is a base docker image designed to be used to create isolated sandbox environments for running LLM/AI agents like Claude Code, [opencode](https://github.com/anomalyco/opencode) and [openclaw](https://github.com/openclaw/openclaw).
 
 ## Why? <!-- omit from toc -->
 
 LLM/AI agents are great tools for automation and improving productivity. They are super powerful! But to quote Uncle Ben - "With great power, comes great responsibility".
 
-Therefore it is very good idea to run these agents in an isolated sandbox environment - such as a docker container.
+Therefore it is a very good idea to run these agents in an isolated sandbox environment - such as a docker container.
 
 While this is not a perfect solution, it significantly reduces the blast radius when they do something dumb - no one wants to see `rm -rf /` being executed on their host machine!
 
@@ -23,9 +21,15 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
   - [Entrypoint](#entrypoint)
   - [Installing `apt` packages during build](#installing-apt-packages-during-build)
 - [Running](#running)
+  - [Mounting Credentials](#mounting-credentials)
   - [Workspace](#workspace)
   - [Installing Additional Packages](#installing-additional-packages)
     - [Persisting Package Installations](#persisting-package-installations)
+- [OpenCode Image](#opencode-image)
+  - [Usage](#usage)
+  - [Web UI](#web-ui)
+    - [Environment Variables](#environment-variables)
+  - [Extending](#extending)
 
 ## Features
 
@@ -44,15 +48,13 @@ This repository contains:
 
 Both images are built using reusable GitHub Actions workflows.
 
-See individual directories for more information.
-
 ## Usage (for building)
 
-To use this base image simply specify it in the `FROM` of your docker.
+To use this base image simply specify it in the `FROM` of your Dockerfile.
 
 In this base image:
 
-- User is `agent` with UID `1000` and GUID `1000`
+- User is `agent` with UID `1000` and GID `1000`
 - Home is `/home/agent`
 - Working directory is `/home/agent/workspace`
 
@@ -64,14 +66,20 @@ Therefore this base image sets this folder as the working directory using `WORKD
 
 ### Entrypoint
 
-It is recommended not to overwrite the `ENTRYPOINT` of this base image, as by default it will do some initialisation (such as installing additional packages - see below), and then run `/bin/bash`. Instead, it is suggested to change the `CMD` of your Docker image to modify the command that gets run during image start.
+It is recommended not to overwrite the `ENTRYPOINT` of this base image, as by default it will do some initialisation (such as installing additional packages - see below), and then run the command specified by `CMD`.
 
-If you do want to modify the `ENTRYPOINT`, you should make sure to run `/entrypoint.sh <command>` to run the initialisation before your command.
+The default `CMD` is `["bash"]`, meaning the container will start an interactive bash shell. To change what runs when the container starts, you should update `CMD`, not `ENTRYPOINT`.
 
-For example, if you want to run python at start, modify ENTRYPOINT to be:
+For example, the opencode image uses:
 
 ```dockerfile
-ENTRYPOINT ["/ENTRYPOINT.sh", "python"]
+CMD ["opencode"]
+```
+
+If you do want to modify the `ENTRYPOINT`, you should use `tini` and the entrypoint script to ensure proper initialisation. For example:
+
+```dockerfile
+ENTRYPOINT ["tini", "--", "/entrypoint.sh", "<command>"]
 ```
 
 ### Installing `apt` packages during build
@@ -92,7 +100,7 @@ Using this docker compose, you can then easily run the image in the background w
 docker compose up -d
 ```
 
-Once the image is running it is possible to connect to the container and execute any command from with it with:
+Once the image is running it is possible to connect to the container and execute any command from within it with:
 
 ```bash
 docker exec -it closedagent <your-command>
@@ -138,7 +146,7 @@ Packages should be space separated, so it may be required to quote the values.
 
 Installing packages on container run can make startup slow.
 
-To speed up container start (after the initial run), it is possible to avoid having to re-install all packages again by mounting docker volumes to persist installations or caches:
+To speed up container start (after the initial run), it is possible to avoid having to install all packages again by mounting docker volumes to persist installations or caches:
 
 This is done by the following volumes which can be seen in the [compose.example.yaml](compose.example.yaml)
 
@@ -154,3 +162,42 @@ These lines persist:
 - Homebrew package installations - future installations will be skipped
 - Bun package installations - future installations will be skipped
 - apt package cache - future installations will **not** be skipped as the installations cannot be easily persisted due to the design of `apt`. However, persisting the cache will speed up future installs by avoiding having to re-download packages.
+
+## OpenCode Image
+
+The `opencode` image extends `closedagent` and provides a sandboxed environment for running [opencode](https://github.com/anomalyco/opencode).
+
+### Usage
+
+By default, when the container is run, it will run the `opencode` command with no args in the default working directory `/home/agent/workspace`.
+
+To get started quickly, simply mount your folder to this directory.
+
+For your current working directory, this command is:
+
+```bash
+docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/opencode:latest
+```
+
+### Web UI
+
+It is also possible to run the opencode Web UI for development on the go or in your local browser.
+
+To do this, using Docker Compose is recommended to easily run the service in the background. An example compose file can be found at [`images/opencode/compose.yaml`](images/opencode/compose.yaml).
+
+Run with:
+
+```bash
+docker compose up -d
+```
+
+#### Environment Variables
+
+When running the Web UI, the following env vars can be set to configure authentication.
+
+- `OPENCODE_SERVER_USERNAME` - Username for Web UI authentication (Default: `opencode`)
+- `OPENCODE_SERVER_PASSWORD` - Password for Web UI authentication (Default: not set/no auth)
+
+### Extending
+
+This image also works well as a base image to be extended and worked upon. An example of this can be seen in the [closedchamber](https://github.com/ahobsonsayers/closedchamber) repository, which offers a docker container for running [openchamber](https://github.com/btriapitsyn/openchamber) - a feature-rich web ui for developing with opencode.
