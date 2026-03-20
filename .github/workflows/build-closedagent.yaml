@@ -28,27 +28,29 @@ jobs:
       tags: ${{ steps.get-tags.outputs.tags }}
 
     steps:
-      - name: Get CalVer tags
+      - name: Get tags
         id: get-tags
         run: |
           CALVER=$(date -u +"%Y.%m.%d")
+
           {
             echo "tags<<EOF"
             echo "latest"
             echo "$CALVER"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+
           echo "
           Output:
-          Tags: latest
-               $CALVER
+          tags: latest, $CALVER
           "
 
   build:
-    needs: get-tags
+    name: Build Image
     uses: ./.github/workflows/docker-build.yaml
+    needs: get-tags
     with:
-      image_name: arranhs/closedagent
-      context_path: .
-      tags: ${{ needs.get-tags.outputs.tags }}
+      image-name: arranhs/closedagent
+      context-path: .
+      image-tags: ${{ needs.get-tags.outputs.tags }}
     secrets: inherit

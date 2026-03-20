@@ -2,7 +2,7 @@ name: Update OpenCode Version
 
 on:
   schedule:
-    - cron: '0 1 * * *' # Everyday at 1am
+    - cron: 0 1 * * * # Everyday at 1am
   workflow_dispatch:
 
 permissions:
@@ -53,14 +53,14 @@ jobs:
           LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
 
       - name: Update Dockerfile
-        if: steps.compare-update.outputs.needs_update == 'true'
+        if: steps.compare-update.outputs.needs-update == 'true'
         run: |
           sed -i "s|^ARG OPENCODE_VERSION=.*|ARG OPENCODE_VERSION=$LATEST_OPENCODE_VERSION|" Dockerfile
         env:
           LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
 
       - name: Commit and push
-        if: steps.compare-update.outputs.needs_update == 'true'
+        if: steps.compare-update.outputs.needs-update == 'true'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

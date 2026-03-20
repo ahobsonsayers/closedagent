@@ -1,49 +1,26 @@
-name: Build and Push Docker Image
+name: Build & Push Docker Image
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/build.yaml
-      - Dockerfile
-      - entrypoint.d/**
-      - scripts/**
-  schedule:
-    - cron: 0 0 * * 0 # Everyweek on Sunday at 12am
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      no-cache:
-        description: No Cache
-        type: boolean
-        default: false
-
-env:
-  DOCKER_IMAGE: arranhs/closedagent
+      image-name:
+        description: Docker image name
+        type: string
+        required: true
+      image-tags:
+        description: Docker image tags (newline separated)
+        type: string
+        required: true
+      context-path:
+        description: Build context path
+        type: string
+        default: .
 
 jobs:
-  get-calver:
-    name: Get CalVer
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    outputs:
-      calver: ${{ steps.get-date.outputs.calver }}
-
-    steps:
-      - name: Get date
-        id: get-date
-        run: |
-          CALVER=$(date -u +"%Y.%m.%d")
-
-          echo "calver=$CALVER" >> $GITHUB_OUTPUT
-
-          echo "
-          CalVer: $CALVER
-          "
-
   build:
     name: Build Image
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -51,54 +28,56 @@ jobs:
           - runner: ubuntu-24.04
             platform: linux/amd64
             platform-slug: linux-amd64
-
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             platform-slug: linux-arm64
 
-    runs-on: ${{ matrix.runner }}
-    timeout-minutes: 10
 
     steps:
       - name: Checkout code
+        id: checkout-code
         uses: actions/checkout@v6
 
-      - name: Set up buildx
+      - name: Setup Buildx
+        id: setup-buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to DockerHub
+        id: login-dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push digest
-        id: build
+        id: build-and-push
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ${{ inputs.context-path }}
           platforms: ${{ matrix.platform }}
-          tags: ${{ env.DOCKER_IMAGE }}
-          cache-from: ${{ !inputs.no-cache && 'type=gha' || '' }}
-          cache-to: ${{ !inputs.no-cache && 'type=gha,mode=max' || '' }}
+          tags: ${{ inputs.image-name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           outputs: type=image,push-by-digest=true,name-canonical=true,push=true
 
       - name: Output digest
+        id: output-digest
         uses: GoCodeAlone/github-action-matrix-outputs-write@1.0.3
         with:
           matrix-step-name: build
           matrix-key: ${{ matrix.platform-slug }}
           outputs: |
-            digest: ${{ steps.build.outputs.digest }}
+            digest: ${{ steps.build-and-push.outputs.digest }}
 
   push-tags:
     name: Push Tags
     runs-on: ubuntu-latest
-    needs: [get-calver, build]
+    needs: build
     timeout-minutes: 10
 
     steps:
-      - name: Set up Buildx
+      - name: Setup Buildx
+        id: setup-buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Get digests
@@ -108,24 +87,36 @@ jobs:
           matrix-step-name: build
 
       - name: Login to DockerHub
+        id: login-dockerhub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Push tags
+        id: push-tags
         run: |
+          TAGS_FLAGS=""
+          while read -r TAG; do
+            [ -z "$TAG" ] && continue
+            TAGS_FLAGS="$TAGS_FLAGS -t $IMAGE_NAME:$TAG"
+          done <<<"$TAGS_INPUT"
+
           DIGESTS=$(
             echo "$DIGESTS_JSON" |
-            jq -r --arg docker_image "$DOCKER_IMAGE" \
-              '.digest | to_entries[] | "\($docker_image)@\(.value)"'
+            jq -r --arg docker_image "$IMAGE_NAME" \
+              '.digest | to_entries[] | "\($IMAGE_NAME)@\(.value)"'
           )
 
           docker buildx imagetools create \
-            -t "$DOCKER_IMAGE:latest" \
-            -t "$DOCKER_IMAGE:$CALVER" \
+            $TAGS_FLAGS \
             $DIGESTS
+
+          echo "
+          Tags: $TAGS_INPUT
+          Digests: $DIGESTS
+          "
         env:
+          IMAGE_NAME: ${{ inputs.image-name }}
           DIGESTS_JSON: ${{ steps.get-digests.outputs.result }}
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE }}
-          CALVER: ${{ needs.get-calver.outputs.calver }}
+          TAGS_INPUT: ${{ inputs.image-tags }}

@@ -9,7 +9,7 @@ on:
       - .github/workflows/docker-build.yaml
       - opencode/**
   schedule:
-    - cron: "0 2 * * *"
+    - cron: 0 2 * * *
   workflow_dispatch:
     inputs:
       no-cache:
@@ -30,27 +30,32 @@ jobs:
         id: checkout-code
         uses: actions/checkout@v6
 
-      - name: Get OpenCode version tags
+      - name: Get tags
         id: get-tags
         run: |
-          OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | cut -d '=' -f2)
+          OPENCODE_VERSION=$(
+            grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | 
+            cut -d '=' -f2
+          )
+
           {
             echo "tags<<EOF"
             echo "latest"
             echo "$OPENCODE_VERSION"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
+  
           echo "
           Output:
-          Tags: latest
-               $OPENCODE_VERSION
+          tags: latest, $OPENCODE_VERSION
           "
 
   build:
+    name: Build Image
     needs: get-tags
     uses: ./.github/workflows/docker-build.yaml
     with:
-      image_name: arranhs/opencode
-      context_path: opencode
-      tags: ${{ needs.get-tags.outputs.tags }}
+      image-name: arranhs/opencode
+      context-path: opencode
+      image-tags: ${{ needs.get-tags.outputs.tags }}
     secrets: inherit
