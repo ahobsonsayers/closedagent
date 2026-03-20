@@ -108,15 +108,15 @@ docker exec -it closedagent <your-command>
 
 ### Mounting Credentials
 
-Most agents (including opencode) need access to your SSH keys and GitHub CLI credentials for code operations. Mount these as read-only volumes:
+Most agents (including opencode) need access to your SSH keys and GitHub CLI credentials for code operations:
 
 ```yaml
 services:
   agent:
     volumes:
-      - ~/.gitconfig:/home/agent/.gitconfig:ro     # Git configuration
-      - ~/.ssh:/home/agent/.ssh:ro               # SSH keys
-      - ~/.config/gh:/home/agent/.config/gh:ro   # GitHub CLI credentials
+      - ~/.gitconfig:/home/agent/.gitconfig     # Git configuration
+      - ~/.ssh:/home/agent/.ssh                 # SSH keys
+      - ~/.config/gh:/home/agent/.config/gh     # GitHub CLI credentials
 ```
 
 ### Workspace
