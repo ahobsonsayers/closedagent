@@ -6,8 +6,8 @@ on:
       - main
     paths:
       - .github/workflows/build-opencode.yaml
-      - .github/workflows/docker-build.yaml
-      - opencode/**
+      - .github/workflows/build.yaml
+      - images/opencode/**
   schedule:
     - cron: 0 2 * * *
   workflow_dispatch:
@@ -34,7 +34,7 @@ jobs:
         id: get-tags
         run: |
           OPENCODE_VERSION=$(
-            grep "^ARG OPENCODE_VERSION=" opencode/Dockerfile | 
+            grep "^ARG OPENCODE_VERSION=" images/opencode/Dockerfile | 
             cut -d '=' -f2
           )
 
@@ -56,6 +56,6 @@ jobs:
     uses: ./.github/workflows/build.yaml
     with:
       image-name: arranhs/opencode
-      context-path: opencode
+      context-path: images/opencode
       image-tags: ${{ needs.get-tags.outputs.tags }}
     secrets: inherit
