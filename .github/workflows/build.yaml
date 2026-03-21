@@ -104,7 +104,7 @@ jobs:
 
           DIGESTS=$(
             echo "$DIGESTS_JSON" |
-            jq -r --arg docker_image "$IMAGE_NAME" \
+            jq -r --arg IMAGE_NAME "$IMAGE_NAME" \
               '.digest | to_entries[] | "\($IMAGE_NAME)@\(.value)"'
           )
 
