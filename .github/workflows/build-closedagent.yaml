@@ -47,7 +47,7 @@ jobs:
 
   build:
     name: Build Image
-    uses: ./.github/workflows/docker-build.yaml
+    uses: ./.github/workflows/build.yaml
     needs: get-tags
     with:
       image-name: arranhs/closedagent

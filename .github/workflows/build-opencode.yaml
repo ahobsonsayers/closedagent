@@ -53,7 +53,7 @@ jobs:
   build:
     name: Build Image
     needs: get-tags
-    uses: ./.github/workflows/docker-build.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       image-name: arranhs/opencode
       context-path: opencode
