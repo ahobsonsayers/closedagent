@@ -1,0 +1,74 @@
+name: Update OpenChamber Version
+
+on:
+  schedule:
+    - cron: 0 2 * * * # Everyday at 2am
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get current version
+        id: get-current-version
+        run: |
+          OPENCHAMBER_VERSION=$(
+            grep "^ARG OPENCHAMBER_VERSION=" images/openchamber/Dockerfile |
+            cut -d '=' -f2
+          )
+
+          echo "openchamber=$OPENCHAMBER_VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "
+          Current OpenChamber Version: $OPENCHAMBER_VERSION
+          "
+
+      - name: Get latest version
+        id: get-latest-version
+        run: |
+          OPENCHAMBER_LATEST=$(npm view @openchamber/web version | tail -n 1)
+
+          echo "openchamber=$OPENCHAMBER_LATEST" >> "$GITHUB_OUTPUT"
+
+          echo "
+          Latest OpenChamber Version: $OPENCHAMBER_LATEST
+          "
+
+      - name: Compare and update version
+        id: compare-update
+        run: |
+          if [ "$CURRENT_OPENCHAMBER_VERSION" != "$LATEST_OPENCHAMBER_VERSION" ]; then
+            echo "needs-update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs-update=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          CURRENT_OPENCHAMBER_VERSION: ${{ steps.get-current-version.outputs.openchamber }}
+          LATEST_OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
+
+      - name: Update Dockerfile
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          sed -i "s|^ARG OPENCHAMBER_VERSION=.*|ARG OPENCHAMBER_VERSION=$LATEST_OPENCHAMBER_VERSION|" images/openchamber/Dockerfile
+        env:
+          LATEST_OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
+
+      - name: Commit and push
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add images/openchamber/Dockerfile
+          git commit -m "Update OpenChamber to $OPENCHAMBER_VERSION"
+          git push
+        env:
+          OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}

@@ -1,15 +1,15 @@
-name: Build and Push opencode Image
+name: Build and Push openchamber Image
 
 on:
   push:
     branches:
       - main
     paths:
-      - .github/workflows/build-opencode.yaml
+      - .github/workflows/build-openchamber.yaml
       - .github/workflows/build.yaml
-      - images/opencode/**
+      - images/openchamber/**
   schedule:
-    - cron: 0 2 * * * # Everyday at 2am
+    - cron: 0 3 * * *  # Everyday at 3am
   workflow_dispatch:
     inputs:
       no-cache:
@@ -33,21 +33,21 @@ jobs:
       - name: Get tags
         id: get-tags
         run: |
-          OPENCODE_VERSION=$(
-            grep "^ARG OPENCODE_VERSION=" images/opencode/Dockerfile | 
+          OPENCHAMBER_VERSION=$(
+            grep "^ARG OPENCHAMBER_VERSION=" images/openchamber/Dockerfile | 
             cut -d '=' -f2
           )
 
           {
             echo "tags<<EOF"
             echo "latest"
-            echo "$OPENCODE_VERSION"
+            echo "$OPENCHAMBER_VERSION"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
   
           echo "
           Output:
-          tags: latest, $OPENCODE_VERSION
+          tags: latest, $OPENCHAMBER_VERSION
           "
 
   build:
@@ -55,7 +55,7 @@ jobs:
     needs: get-tags
     uses: ./.github/workflows/build.yaml
     with:
-      image-name: arranhs/opencode
-      context-path: images/opencode
+      image-name: arranhs/openchamber
+      context-path: images/openchamber
       image-tags: ${{ needs.get-tags.outputs.tags }}
     secrets: inherit

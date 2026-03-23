@@ -1,0 +1,17 @@
+services:
+  openchamber:
+    container_name: openchamber
+    image: arranhs/openchamber:latest
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - ~/code:/home/agent/workspace # code files
+      - ~/.config/openchamber:/home/agent/.config/openchamber # openchamber config
+      - ~/.config/opencode:/home/agent/.config/opencode # opencode config
+      - ~/.local/share/opencode:/home/agent/.local/share/opencode # opencode data
+      - ~/.gitconfig:/home/agent/.gitconfig # git config
+      - ~/.config/gh:/home/agent/.config/gh # github cli
+

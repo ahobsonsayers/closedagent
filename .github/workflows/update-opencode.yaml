@@ -44,9 +44,9 @@ jobs:
         id: compare-update
         run: |
           if [ "$CURRENT_OPENCODE_VERSION" != "$LATEST_OPENCODE_VERSION" ]; then
-            echo "needs_update=true" >> $GITHUB_OUTPUT
+            echo "needs-update=true" >> $GITHUB_OUTPUT
           else
-            echo "needs_update=false" >> $GITHUB_OUTPUT
+            echo "needs-update=false" >> $GITHUB_OUTPUT
           fi
         env:
           CURRENT_OPENCODE_VERSION: ${{ steps.get-current-version.outputs.opencode }}

@@ -29,7 +29,8 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
   - [Usage](#usage)
   - [Web UI](#web-ui)
     - [Environment Variables](#environment-variables)
-  - [Extending](#extending)
+- [OpenChamber Image](#openchamber-image)
+  - [Usage](#usage-1)
 
 ## Features
 
@@ -45,8 +46,9 @@ This repository contains:
 
 - **closedagent**: Base Docker image with development tools
 - **opencode**: OpenCode AI sandboxed Docker image (extends closedagent)
+- **openchamber**: OpenChamber web UI for OpenCode (extends opencode)
 
-Both images are built using reusable GitHub Actions workflows.
+All images are built using reusable GitHub Actions workflows.
 
 ## Usage (for building)
 
@@ -198,6 +200,26 @@ When running the Web UI, the following env vars can be set to configure authenti
 - `OPENCODE_SERVER_USERNAME` - Username for Web UI authentication (Default: `opencode`)
 - `OPENCODE_SERVER_PASSWORD` - Password for Web UI authentication (Default: not set/no auth)
 
-### Extending
+## OpenChamber Image
 
-This image also works well as a base image to be extended and worked upon. An example of this can be seen in the [closedchamber](https://github.com/ahobsonsayers/closedchamber) repository, which offers a docker container for running [openchamber](https://github.com/btriapitsyn/openchamber) - a feature-rich web ui for developing with opencode.
+The `openchamber` image extends `opencode` and provides a sandboxed environment for running [openchamber](https://github.com/btriapitsyn/openchamber) - a feature-rich web UI for developing with opencode.
+
+### Usage
+
+By default, when the container is run, it will start the OpenChamber web UI on port 3000.
+
+Using Docker Compose is recommended to easily run the service. An example compose file can be found at [`images/openchamber/compose.yaml`](images/openchamber/compose.yaml).
+
+Run with:
+
+```bash
+docker compose up -d
+```
+
+Then access the web UI at http://localhost:3000.
+
+The compose file mounts:
+- Your code workspace to `/home/agent/workspace`
+- OpenChamber config to `/home/agent/.config/openchamber`
+- OpenCode config and data for persistence
+- Git and GitHub CLI credentials
