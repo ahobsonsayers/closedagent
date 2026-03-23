@@ -26,6 +26,10 @@ jobs:
       tags: ${{ steps.get-tags.outputs.tags }}
 
     steps:
+      - name: Checkout code
+        id: checkout-code
+        uses: actions/checkout@v6
+
       - name: Get tags
         id: get-tags
         run: |

@@ -21,7 +21,7 @@ jobs:
       - name: Get current version
         id: get-current-version
         run: |
-          OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" Dockerfile | cut -d '=' -f2)
+          OPENCODE_VERSION=$(grep "^ARG OPENCODE_VERSION=" images/opencode/Dockerfile | cut -d '=' -f2)
 
           echo "opencode=$OPENCODE_VERSION" >> $GITHUB_OUTPUT
 
@@ -55,7 +55,7 @@ jobs:
       - name: Update Dockerfile
         if: steps.compare-update.outputs.needs-update == 'true'
         run: |
-          sed -i "s|^ARG OPENCODE_VERSION=.*|ARG OPENCODE_VERSION=$LATEST_OPENCODE_VERSION|" Dockerfile
+          sed -i "s|^ARG OPENCODE_VERSION=.*|ARG OPENCODE_VERSION=$LATEST_OPENCODE_VERSION|" images/opencode/Dockerfile
         env:
           LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
 
@@ -64,7 +64,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add Dockerfile
+          git add images/opencode/Dockerfile
           git commit -m "Update OpenCode to $OPENCODE_VERSION"
           git push
         env:

@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/workflows/build-opencode.yaml
+      - .github/workflows/update-opencode.yaml
       - .github/workflows/build.yaml
       - images/opencode/**
   schedule:

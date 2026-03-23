@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/workflows/build-openchamber.yaml
+      - .github/workflows/update-openchamber.yaml
       - .github/workflows/build.yaml
       - images/openchamber/**
   schedule:
