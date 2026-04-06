@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG OPENCODE_VERSION=1.3.15
+ARG OPENCODE_VERSION=1.3.16
 
 # Install opencode
 RUN bun install --global opencode-ai@$OPENCODE_VERSION
