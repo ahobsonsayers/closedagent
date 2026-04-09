@@ -21,45 +21,73 @@ jobs:
       - name: Get current version
         id: get-current-version
         run: |
+          OPENCODE_VERSION=$(
+            grep "^FROM arranhs/opencode:" images/openchamber/Dockerfile |
+            cut -d ':' -f2
+          )
+
           OPENCHAMBER_VERSION=$(
             grep "^ARG OPENCHAMBER_VERSION=" images/openchamber/Dockerfile |
             cut -d '=' -f2
           )
 
+          echo "opencode=$OPENCODE_VERSION" >> "$GITHUB_OUTPUT"
           echo "openchamber=$OPENCHAMBER_VERSION" >> "$GITHUB_OUTPUT"
 
           echo "
+          Current OpenCode Version: $OPENCODE_VERSION
           Current OpenChamber Version: $OPENCHAMBER_VERSION
           "
 
       - name: Get latest version
         id: get-latest-version
         run: |
+          OPENCODE_LATEST=$(npm view opencode-ai version | tail -n 1)
           OPENCHAMBER_LATEST=$(npm view @openchamber/web version | tail -n 1)
 
+          echo "opencode=$OPENCODE_LATEST" >> "$GITHUB_OUTPUT"
           echo "openchamber=$OPENCHAMBER_LATEST" >> "$GITHUB_OUTPUT"
 
           echo "
+          Latest OpenCode Version: $OPENCODE_LATEST
           Latest OpenChamber Version: $OPENCHAMBER_LATEST
           "
 
       - name: Compare and update version
         id: compare-update
         run: |
+          OPENCODE_CHANGED="false"
+          OPENCHAMBER_CHANGED="false"
+
+          if [ "$CURRENT_OPENCODE_VERSION" != "$LATEST_OPENCODE_VERSION" ]; then
+            OPENCODE_CHANGED="true"
+          fi
+
           if [ "$CURRENT_OPENCHAMBER_VERSION" != "$LATEST_OPENCHAMBER_VERSION" ]; then
+            OPENCHAMBER_CHANGED="true"
+          fi
+
+          if [ "$OPENCODE_CHANGED" = "true" ] || [ "$OPENCHAMBER_CHANGED" = "true" ]; then
             echo "needs-update=true" >> "$GITHUB_OUTPUT"
           else
             echo "needs-update=false" >> "$GITHUB_OUTPUT"
           fi
+
+          echo "opencode-changed=$OPENCODE_CHANGED" >> "$GITHUB_OUTPUT"
+          echo "openchamber-changed=$OPENCHAMBER_CHANGED" >> "$GITHUB_OUTPUT"
         env:
+          CURRENT_OPENCODE_VERSION: ${{ steps.get-current-version.outputs.opencode }}
+          LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
           CURRENT_OPENCHAMBER_VERSION: ${{ steps.get-current-version.outputs.openchamber }}
           LATEST_OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
 
       - name: Update Dockerfile
         if: steps.compare-update.outputs.needs-update == 'true'
         run: |
+          sed -i "s|^FROM arranhs/opencode:.*|FROM arranhs/opencode:$LATEST_OPENCODE_VERSION|" images/openchamber/Dockerfile
           sed -i "s|^ARG OPENCHAMBER_VERSION=.*|ARG OPENCHAMBER_VERSION=$LATEST_OPENCHAMBER_VERSION|" images/openchamber/Dockerfile
         env:
+          LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
           LATEST_OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
 
       - name: Commit and push
@@ -68,7 +96,19 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add images/openchamber/Dockerfile
-          git commit -m "Update OpenChamber to $OPENCHAMBER_VERSION"
+
+          if [ "$OPENCODE_CHANGED" = "true" ] && [ "$OPENCHAMBER_CHANGED" = "true" ]; then
+            MESSAGE="Update OpenCode to $LATEST_OPENCODE_VERSION and OpenChamber to $LATEST_OPENCHAMBER_VERSION"
+          elif [ "$OPENCODE_CHANGED" = "true" ]; then
+            MESSAGE="Update OpenCode to $LATEST_OPENCODE_VERSION"
+          else
+            MESSAGE="Update OpenChamber to $LATEST_OPENCHAMBER_VERSION"
+          fi
+
+          git commit -m "$MESSAGE"
           git push
         env:
-          OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
+          OPENCODE_CHANGED: ${{ steps.compare-update.outputs.opencode-changed }}
+          OPENCHAMBER_CHANGED: ${{ steps.compare-update.outputs.openchamber-changed }}
+          LATEST_OPENCODE_VERSION: ${{ steps.get-latest-version.outputs.opencode }}
+          LATEST_OPENCHAMBER_VERSION: ${{ steps.get-latest-version.outputs.openchamber }}
