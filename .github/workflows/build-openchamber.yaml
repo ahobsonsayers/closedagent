@@ -39,16 +39,24 @@ jobs:
             cut -d '=' -f2
           )
 
+          OPENCODE_VERSION=$(
+            grep "^FROM arranhs/opencode:" images/openchamber/Dockerfile |
+            cut -d ':' -f2
+          )
+
+          COMBINED_TAG="openchamber-$OPENCHAMBER_VERSION-opencode-$OPENCODE_VERSION"
+
           {
             echo "tags<<EOF"
             echo "latest"
             echo "$OPENCHAMBER_VERSION"
+            echo "$COMBINED_TAG"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
   
           echo "
           Output:
-          tags: latest, $OPENCHAMBER_VERSION
+          tags: latest, $OPENCHAMBER_VERSION, $COMBINED_TAG
           "
 
   build:
