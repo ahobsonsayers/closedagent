@@ -2,6 +2,9 @@ FROM arranhs/opencode:1.2.15
 
 ARG OPENCHAMBER_VERSION=1.9.4
 
+ENV OPENCHAMBER_HOST=0.0.0.0
+ENC OPENCHAMBER_PORT=3000
+
 USER root
 
 # Install additional apt packages
