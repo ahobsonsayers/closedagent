@@ -79,8 +79,5 @@ RUN curl -fsSL https://bun.sh/install | bash && \
 ENV PATH=$HOME/.bun/bin:$PATH
 ENV PATH=$HOME/.local/bin:$PATH
 
-# Set working directory
-WORKDIR "$HOME/workspace"
-
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 CMD ["bash"]
