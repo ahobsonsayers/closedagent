@@ -34,7 +34,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 
 ## Features
 
-- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun and gh (GitHub CLI).
+- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun.
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `bun` or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
 - Does not run as root - agents shouldn't need to run as superuser. This being said, the image does have...
@@ -110,7 +110,7 @@ docker exec -it closedagent <your-command>
 
 ### Mounting Credentials
 
-Most agents (including opencode) need access to your SSH keys and GitHub CLI credentials for code operations:
+Most agents (including opencode) need access to your SSH keys for code operations:
 
 ```yaml
 services:
@@ -118,7 +118,6 @@ services:
     volumes:
       - ~/.gitconfig:/home/agent/.gitconfig     # Git configuration
       - ~/.ssh:/home/agent/.ssh                 # SSH keys
-      - ~/.config/gh:/home/agent/.config/gh     # GitHub CLI credentials
 ```
 
 ### Workspace
@@ -222,4 +221,4 @@ The compose file mounts:
 - Your code workspace to `/home/agent/workspace`
 - OpenChamber config to `/home/agent/.config/openchamber`
 - OpenCode config and data for persistence
-- Git and GitHub CLI credentials
+- Git config

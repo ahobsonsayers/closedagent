@@ -12,7 +12,6 @@ RUN apt-get update && \
     coreutils \
     curl \
     findutils \
-    gh \
     git \
     grep \
     jq \

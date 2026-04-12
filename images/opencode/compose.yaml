@@ -11,4 +11,3 @@ services:
       - ~/.config/opencode:/home/agent/.config/opencode
       - ~/.local/share/opencode:/home/agent/.local/share/opencode
       - ~/.gitconfig:/home/agent/.gitconfig
-      - ~/.config/gh:/home/agent/.config/gh
