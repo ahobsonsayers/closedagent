@@ -1,4 +1,4 @@
-FROM arranhs/opencode:1.2.15
+FROM arranhs/opencode:1.4.3
 
 ARG OPENCHAMBER_VERSION=1.9.4
 
