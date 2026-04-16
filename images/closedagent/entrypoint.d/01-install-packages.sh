@@ -24,8 +24,14 @@ if [[ -n ${BREW_PACKAGES:-} ]]; then
   echo
 fi
 
-if [[ -n ${BUN_PACKAGES:-} ]]; then
-  echo "Installing bun packages"
-  bun install -g $(strip_quotes "$BUN_PACKAGES")
+if [[ -n ${NPM_TOOLS:-} ]]; then
+  echo "Installing npm tools"
+  bun install -g $(strip_quotes "$NPM_TOOLS")
+  echo
+fi
+
+if [[ -n ${PYTHON_TOOLS:-} ]]; then
+  echo "Installing python tools"
+  uv tool install --reinstall $(strip_quotes "$PYTHON_TOOLS")
   echo
 fi

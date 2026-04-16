@@ -34,8 +34,8 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 
 ## Features
 
-- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun.
-- Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `bun` or `apt` at runtime.
+- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun, python3, and uv.
+- Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `npm` (tools), `uv` (python tools) or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
 - Does not run as root - agents shouldn't need to run as superuser. This being said, the image does have...
 - Passwordless sudo - for those rare occasions you _do_ need root.
@@ -128,14 +128,15 @@ Therefore when using any image based on this base image, you should mount your w
 
 ### Installing Additional Packages
 
-Any image based on this base image has the ability to install additional packages from `brew`, `bun` or `apt` at container startup by using environment variables.
+Any image based on this base image has the ability to install additional tools from `brew`, `npm`, `uv` (python tools) or `apt` at container startup by using environment variables.
 
 This is useful for when you need to install tools or programming languages etc. that aren't included in the image by default.
 
 To utilize this feature, set:
 
 - `BREW_PACKAGES` environment variable to install `brew` packages (recommended)
-- `BUN_PACKAGES` environment variable to install `bun` packages globally
+- `NPM_TOOLS` environment variable to install `npm` tools globally
+- `PYTHON_TOOLS` environment variable to install python tools globally using `uv tool install`
 - `APT_PACKAGES` environment variable to install `apt` packages
 
 Packages should be space separated, so it may be required to quote the values.
@@ -154,15 +155,17 @@ This is done by the following volumes which can be seen in the [compose.example.
 ```yaml
 volumes:
   - closedagent-brew:/home/linuxbrew
-  - closedagent-bun:/home/agent/.bun
-  - closedagent-apt-cache:/var/cache/apt/archives
+  - closedagent-npm:/home/agent/.bun
+  - closedagent-python:/home/agent/.cache/uv
+  - closedagent-apt:/var/cache/apt/archives
 ```
 
 These lines persist:
 
 - Homebrew package installations - future installations will be skipped
-- Bun package installations - future installations will be skipped
-- apt package cache - future installations will **not** be skipped as the installations cannot be easily persisted due to the design of `apt`. However, persisting the cache will speed up future installs by avoiding having to re-download packages.
+- npm tool installations - future installations will be skipped
+- python tool installations - future installations will be skipped
+- apt packages - future installations will **not** be skipped as the installations cannot be easily persisted due to the design of `apt`. However, persisting the cache will speed up future installs by avoiding having to re-download packages.
 
 ## OpenCode Image
 

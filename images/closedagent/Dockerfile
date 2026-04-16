@@ -16,6 +16,7 @@ RUN apt-get update && \
     grep \
     jq \
     openssh-client \
+    python3 \
     sed \
     sudo \
     tar \
@@ -73,6 +74,9 @@ WORKDIR "$HOME"
 # Install bun
 RUN curl -fsSL https://bun.sh/install | bash && \
     ln -s $HOME/.bun/bin/bun $HOME/.bun/bin/node
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Add directories to PATH
 ENV PATH=$HOME/.bun/bin:$PATH

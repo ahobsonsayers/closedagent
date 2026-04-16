@@ -5,15 +5,18 @@ services:
     command: ["bash", "-c", "echo sleeping && sleep infinity"]
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
+      - closedagent-apt:/var/cache/apt/archives # Persist apt package cache
       - closedagent-brew:/home/linuxbrew # Persist installed brew packages
-      - closedagent-bun:/home/agent/.bun # Persist installed bun packages
-      - closedagent-apt-cache:/var/cache/apt/archives # Persist apt package cache
+      - closedagent-npm:/home/agent/.bun # Persist installed npm tools
+      - closedagent-python:/home/agent/.cache/uv # Persist uv cache
     environment:
+      - APT_PACKAGES="fastfetch micro"
       - BREW_PACKAGES="go gopls"
-      - BUN_PACKAGES="@biomejs/biome prettier"
-      - APT_PACKAGES="python3 python3-pip"
+      - NPM_TOOLS="eslint prettier"
+      - PYTHON_TOOLS="ruff mypy"
 
 volumes:
+  closedagent-apt:
   closedagent-brew:
-  closedagent-bun:
-  closedagent-apt-cache:
+  closedagent-npm:
+  closedagent-python:
