@@ -94,7 +94,7 @@ Alternatively, change to root using `USER root` - but don't forget to change bac
 
 To run agent images based on this base image, it is recommended to use docker compose. This simplifies much of the configuration/settings needed to run an image, such as the command, volumes and environment variables.
 
-An example docker compose which runs this base image and then sleeps infinitely, can be seen in [compose.example.yaml](compose.example.yaml).
+An example docker compose which runs this base image and then sleeps infinitely, can be seen in [`images/closedagent/compose.yaml`](images/closedagent/compose.yaml).
 
 Using this docker compose, you can then easily run the image in the background with:
 
@@ -148,24 +148,21 @@ Packages should be space separated, so it may be required to quote the values.
 
 Installing packages on container run can make startup slow.
 
-To speed up container start (after the initial run), it is possible to avoid having to install all packages again by mounting docker volumes to persist installations or caches:
+To speed up container start (after the initial run), it is possible to persist the package manager caches by mounting docker volumes:
 
-This is done by the following volumes which can be seen in the [compose.example.yaml](compose.example.yaml)
+This is done by the following volumes which can be seen in [`images/closedagent/compose.yaml`](images/closedagent/compose.yaml)
 
 ```yaml
 volumes:
-  - closedagent-brew:/home/linuxbrew
-  - closedagent-npm:/home/agent/.bun
-  - closedagent-python:/home/agent/.cache/uv
-  - closedagent-apt:/var/cache/apt/archives
+  - brew-cache:/home/agent/.cache/Homebrew
+  - bun-cache:/home/agent/.bun/install/cache
+  - uv-cache:/home/agent/.cache/uv
+  - apt-cache:/var/cache/apt/archives
 ```
 
-These lines persist:
+These lines persist download caches (not full installations) for each package manager. Tools are still installed on each container start, but packages are fetched from cache when available.
 
-- Homebrew package installations - future installations will be skipped
-- npm tool installations - future installations will be skipped
-- python tool installations - future installations will be skipped
-- apt packages - future installations will **not** be skipped as the installations cannot be easily persisted due to the design of `apt`. However, persisting the cache will speed up future installs by avoiding having to re-download packages.
+> **Tip:** It is recommended to only mount the caches as shown above. While you *can* mount the actual installation directories for faster startup (e.g., `/home/linuxbrew`, `/home/agent/.bun`), this may cause unforeseen or hard-to-debug issues.
 
 ## OpenCode Image
 
