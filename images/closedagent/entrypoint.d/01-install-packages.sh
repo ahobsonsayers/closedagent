@@ -32,6 +32,6 @@ fi
 
 if [[ -n ${PYTHON_TOOLS:-} ]]; then
   echo "Installing python tools"
-  uv tool install --reinstall $(strip_quotes "$PYTHON_TOOLS")
+  uv tool install $(strip_quotes "$PYTHON_TOOLS")
   echo
 fi
