@@ -44,6 +44,7 @@ RUN \
     # Create some standard folders
     mkdir -p \
     "$HOME/workspace" \
+    "$HOME/.cache" \    
     "$HOME/.config" \
     "$HOME/.local/bin" \
     "$HOME/.local/share" && \
