@@ -1,15 +1,19 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
+env:
+  SH_FILES:
+    sh: find . -type f -name '*.sh'
+
 tasks:
   format:
     cmds:
-      - shfmt -w -i 2 -s **/*.sh
-      - chmod +x **/*.sh
+      - shfmt -w -i 2 -s $SH_FILES
+      - chmod +x $SH_FILES
 
   lint:
     cmds:
-      - shellcheck **/*.sh
+      - shellcheck $SH_FILES
 
   build:
     cmds:
