@@ -1,4 +1,4 @@
-name: Update OpenCode Version
+name: Update opencode version
 
 on:
   schedule:

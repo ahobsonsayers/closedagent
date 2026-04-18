@@ -1,4 +1,4 @@
-name: Update OpenChamber Version
+name: Update openchamber version
 
 on:
   schedule:

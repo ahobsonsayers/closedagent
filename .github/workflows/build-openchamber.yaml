@@ -1,4 +1,4 @@
-name: Build and Push openchamber Image
+name: Build and push openchamber image
 
 on:
   push:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   get-tags:
-    name: Get Tags
+    name: Get tags
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -60,7 +60,7 @@ jobs:
           "
 
   build:
-    name: Build Image
+    name: Build image
     needs: get-tags
     uses: ./.github/workflows/build.yaml
     with:

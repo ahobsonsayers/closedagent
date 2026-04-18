@@ -1,4 +1,4 @@
-name: Build and Push closedagent Image
+name: Build and push closedagent image
 
 on:
   push:
@@ -19,7 +19,7 @@ on:
 
 jobs:
   get-tags:
-    name: Get Tags
+    name: Get tags
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -48,7 +48,7 @@ jobs:
           "
 
   build:
-    name: Build Image
+    name: Build image
     uses: ./.github/workflows/build.yaml
     needs: get-tags
     with:
