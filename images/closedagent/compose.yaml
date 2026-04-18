@@ -5,18 +5,18 @@ services:
     command: ["bash", "-c", "echo sleeping && sleep infinity"]
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
-      - apt-cache:/var/cache/apt/archives # Persist apt cache
       - brew-cache:/home/agent/.cache/Homebrew # Persist brew cache
       - bun-cache:/home/agent/.bun/install/cache # Persist bun cache
       - uv-cache:/home/agent/.cache/uv # Persist uv cache
+      - apt-cache:/var/cache/apt/archives # Persist apt cache
     environment:
-      - APT_PACKAGES="fastfetch micro"
       - BREW_PACKAGES="go gopls"
       - NPM_TOOLS="eslint prettier"
       - PYTHON_TOOLS="ruff mypy"
+      - APT_PACKAGES="fastfetch micro"
 
 volumes:
-  apt-cache:
   brew-cache:
   bun-cache:
   uv-cache:
+  apt-cache:
