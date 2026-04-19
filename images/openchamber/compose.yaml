@@ -2,8 +2,6 @@ services:
   openchamber:
     container_name: openchamber
     image: arranhs/openchamber:latest
-    build:
-      context: .
     restart: unless-stopped
     ports:
       - 3000:3000
