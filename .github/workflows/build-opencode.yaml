@@ -55,8 +55,8 @@ jobs:
     name: Build image
     needs: get-tags
     uses: ./.github/workflows/build.yaml
+    secrets: inherit
     with:
       image-name: arranhs/opencode
       context-path: images/opencode
       image-tags: ${{ needs.get-tags.outputs.tags }}
-    secrets: inherit

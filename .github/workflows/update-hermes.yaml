@@ -1,0 +1,71 @@
+name: Update hermes version
+
+on:
+  schedule:
+    - cron: 0 1 * * * # Everyday at 1am
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Get current version
+        id: get-current-version
+        run: |
+          HERMES_VERSION=$(grep "^ARG HERMES_VERSION=" images/hermes/Dockerfile | cut -d '=' -f2)
+
+          echo "hermes=$HERMES_VERSION" >> $GITHUB_OUTPUT
+
+          echo "
+          Current Hermes Version: $HERMES_VERSION
+          "
+
+      - name: Get latest version
+        id: get-latest-version
+        run: |
+          HERMES_LATEST=$(curl -s https://api.github.com/repos/NousResearch/hermes-agent/releases/latest | jq -r '.tag_name' | sed 's/^v//')
+
+          echo "hermes=$HERMES_LATEST" >> $GITHUB_OUTPUT
+
+          echo "
+          Latest Hermes Version: $HERMES_LATEST
+          "
+
+      - name: Compare and update version
+        id: compare-update
+        run: |
+          if [ "$CURRENT_HERMES_VERSION" != "$LATEST_HERMES_VERSION" ]; then
+            echo "needs-update=true" >> $GITHUB_OUTPUT
+          else
+            echo "needs-update=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          CURRENT_HERMES_VERSION: ${{ steps.get-current-version.outputs.hermes }}
+          LATEST_HERMES_VERSION: ${{ steps.get-latest-version.outputs.hermes }}
+
+      - name: Update Dockerfile
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          sed -i "s|^ARG HERMES_VERSION=.*|ARG HERMES_VERSION=$LATEST_HERMES_VERSION|" images/hermes/Dockerfile
+        env:
+          LATEST_HERMES_VERSION: ${{ steps.get-latest-version.outputs.hermes }}
+
+      - name: Commit and push
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add images/hermes/Dockerfile
+          git commit -m "Update Hermes to $LATEST_HERMES_VERSION"
+          git push
+        env:
+          LATEST_HERMES_VERSION: ${{ steps.get-latest-version.outputs.hermes }}
