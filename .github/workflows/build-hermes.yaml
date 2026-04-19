@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - .github/workflows/build-hermes.yaml
+      - .github/workflows/update-hermes.yaml
       - .github/workflows/build.yaml
       - images/hermes/**
   schedule:
