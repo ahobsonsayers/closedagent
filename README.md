@@ -47,6 +47,7 @@ This repository contains:
 - **closedagent**: Base Docker image with development tools
 - **opencode**: OpenCode AI sandboxed Docker image (extends closedagent)
 - **openchamber**: OpenChamber web UI for OpenCode (extends opencode)
+- **hermes**: Hermes Agent from Nous Research (extends closedagent)
 
 All images are built using reusable GitHub Actions workflows.
 
@@ -222,3 +223,25 @@ The compose file mounts:
 - OpenChamber config to `/home/agent/.config/openchamber`
 - OpenCode config and data for persistence
 - Git config
+
+## Hermes Image
+
+The `hermes` image extends `closedagent` and provides a sandboxed environment for running [Hermes Agent](https://hermes-agent.nousresearch.com/) - an autonomous agent from Nous Research that grows with you.
+
+### Usage
+
+By default, when the container is run, it will start the Hermes gateway.
+
+Using Docker Compose is recommended to easily run the service. An example compose file can be found at [`images/hermes/compose.yaml`](images/hermes/compose.yaml).
+
+Run with:
+
+```bash
+docker compose up -d
+```
+
+The compose file mounts:
+- Your code workspace to `/home/agent/workspace`
+- Hermes config to `/home/agent/.config/hermes`
+- Hermes data to `/home/agent/.local/share/hermes`
+- Git config and SSH keys for code operations
