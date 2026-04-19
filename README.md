@@ -226,22 +226,26 @@ The compose file mounts:
 
 ## Hermes Image
 
-The `hermes` image extends `closedagent` and provides a sandboxed environment for running [Hermes Agent](https://hermes-agent.nousresearch.com/) - an autonomous agent from Nous Research that grows with you.
+The `hermes` image extends `closedagent` and provides a sandboxed environment for running [Hermes Agent](https://hermes-agent.nousresearch.com/) - an autonomous agent from Nous Research.
 
 ### Usage
 
-By default, when the container is run, it will start the Hermes gateway.
-
-Using Docker Compose is recommended to easily run the service. An example compose file can be found at [`images/hermes/compose.yaml`](images/hermes/compose.yaml).
-
-Run with:
+By default, the container runs the `hermes` command. You can specify any Hermes subcommand:
 
 ```bash
-docker compose up -d
+# Run the gateway
+docker run -it --rm arranhs/hermes:latest hermes gateway start
+
+# Start an interactive chat
+docker run -it --rm arranhs/hermes:latest hermes chat
+
+# Check version
+docker run --rm arranhs/hermes:latest hermes --version
 ```
+
+Using Docker Compose is recommended for running the gateway service. An example compose file can be found at [`images/hermes/compose.yaml`](images/hermes/compose.yaml).
 
 The compose file mounts:
 - Your code workspace to `/home/agent/workspace`
-- Hermes config to `/home/agent/.config/hermes`
-- Hermes data to `/home/agent/.local/share/hermes`
+- Hermes config directory to `/home/agent/.hermes`
 - Git config and SSH keys for code operations
