@@ -5,16 +5,6 @@ ARG OPENCHAMBER_VERSION=1.9.6
 ENV OPENCHAMBER_HOST=0.0.0.0
 ENV OPENCHAMBER_PORT=3000
 
-USER root
-
-# Install additional apt packages
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3 && \
-    rm -rf /var/lib/apt/lists/*
-
-USER agent
-
 # Install openchamber
 # This contains a nasty hack to work around bun arbitrarily hanging on arm
 # bun install is attempted multiple times if the command doesnt complete in a certain time
