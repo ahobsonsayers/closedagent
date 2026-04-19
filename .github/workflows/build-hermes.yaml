@@ -1,15 +1,15 @@
-name: Build and push closedagent image
+name: Build and push hermes image
 
 on:
   push:
     branches:
       - main
     paths:
-      - .github/workflows/build-closedagent.yaml
+      - .github/workflows/build-hermes.yaml
       - .github/workflows/build.yaml
-      - images/closedagent/**
+      - images/hermes/**
   schedule:
-    - cron: 0 0 * * 0
+    - cron: 0 2 * * * # Everyday at 2am
   workflow_dispatch:
     inputs:
       no-cache:
@@ -33,26 +33,29 @@ jobs:
       - name: Get tags
         id: get-tags
         run: |
-          CALVER=$(date -u +"%Y.%m.%d")
+          HERMES_VERSION=$(
+            grep "^ARG HERMES_VERSION=" images/hermes/Dockerfile | 
+            cut -d '=' -f2
+          )
 
           {
             echo "tags<<EOF"
             echo "latest"
-            echo "$CALVER"
+            echo "$HERMES_VERSION"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-
+  
           echo "
           Output:
-          tags: latest, $CALVER
+          tags: latest, $HERMES_VERSION
           "
 
   build:
     name: Build image
-    uses: ./.github/workflows/build.yaml
     needs: get-tags
+    uses: ./.github/workflows/build.yaml
     secrets: inherit
     with:
-      image-name: arranhs/closedagent
-      context-path: images/closedagent
+      image-name: arranhs/hermes
+      context-path: images/hermes
       image-tags: ${{ needs.get-tags.outputs.tags }}
