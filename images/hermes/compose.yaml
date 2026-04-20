@@ -2,7 +2,7 @@ services:
   hermes:
     container_name: hermes
     image: arranhs/hermes:latest
-    command: ["hermes", "gateway", "start"]
+    command: ["hermes", "gateway", "run"]
     restart: unless-stopped
     volumes:
       - ~/.hermes:/home/agent/.hermes
