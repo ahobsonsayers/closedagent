@@ -11,17 +11,18 @@ RUN apt-get update && \
     ripgrep && \
     rm -rf /var/lib/apt/lists/*
 
-USER agent
+WORKDIR /opt/hermes
 
-# Clone Hermes
+# Install hermes
 RUN git clone --branch "v$HERMES_VERSION" --depth 1 --recursive \
-    https://github.com/NousResearch/hermes-agent.git \
-    ~/.hermes/hermes-agent
-
-# Install Hermes
-RUN cd ~/.hermes/hermes-agent && \
+      https://github.com/NousResearch/hermes-agent.git . && \
     uv venv && \
     uv pip install ".[messaging,cron,cli,mcp]" && \
-    ln -sf ~/.hermes/hermes-agent/.venv/bin/hermes ~/.local/bin/hermes
+    chown agent:agent -R /opt/hermes && \
+    ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes
+
+USER agent
+
+WORKDIR $HOME
 
 CMD ["hermes"]
