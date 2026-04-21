@@ -17,12 +17,10 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - [Features](#features)
 - [Monorepo](#monorepo)
 - [Usage (for building)](#usage-for-building)
-  - [Working Directory](#working-directory)
   - [Entrypoint](#entrypoint)
   - [Installing `apt` packages during build](#installing-apt-packages-during-build)
 - [Running](#running)
   - [Mounting Credentials](#mounting-credentials)
-  - [Workspace](#workspace)
   - [Installing Additional Packages](#installing-additional-packages)
     - [Persisting Package Installations](#persisting-package-installations)
 - [OpenCode Image](#opencode-image)
@@ -59,13 +57,6 @@ In this base image:
 
 - User is `agent` with UID `1000` and GID `1000`
 - Home is `/home/agent`
-- Working directory is `/home/agent/workspace`
-
-### Working Directory
-
-This image expects that the workspace for any agent will be in the `/home/agent/workspace` folder, and as part of the initialisation the container will make sure the files in this folder have the correct permissions.
-
-Therefore this base image sets this folder as the working directory using `WORKDIR`. It is recommended that any image based on this base image keeps this working directory in their final image.
 
 ### Entrypoint
 
@@ -121,12 +112,6 @@ services:
       - ~/.ssh:/home/agent/.ssh                 # SSH keys
 ```
 
-### Workspace
-
-The default workspace for agents run using this image is `/home/agent/workspace`.
-
-Therefore when using any image based on this base image, you should mount your workspace files to `/home/agent/workspace`.
-
 ### Installing Additional Packages
 
 Any image based on this base image has the ability to install additional tools from `brew`, `npm`, `uv` (python tools) or `apt` at container startup by using environment variables.
@@ -171,11 +156,9 @@ The `opencode` image extends `closedagent` and provides a sandboxed environment 
 
 ### Usage
 
-By default, when the container is run, it will run the `opencode` command with no args in the default working directory `/home/agent/workspace`.
+By default, when the container is run, it will run the `opencode` command.
 
-To get started quickly, simply mount your folder to this directory.
-
-For your current working directory, this command is:
+To get started quickly, simply mount your folder and run the image:
 
 ```bash
 docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/opencode:latest

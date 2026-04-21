@@ -20,5 +20,4 @@ fix_perms "$HOME"/.cache
 fix_perms "$HOME"/.config
 fix_perms "$HOME"/.bun
 fix_perms "$HOME"/.local
-fix_perms "$HOME"/workspace
 echo
