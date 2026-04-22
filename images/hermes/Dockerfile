@@ -17,7 +17,10 @@ WORKDIR /opt/hermes
 RUN git clone --branch "v$HERMES_VERSION" --depth 1 --recursive \
       https://github.com/NousResearch/hermes-agent.git . && \
     uv venv && \
-    uv pip install ".[messaging,cron,cli,mcp]" && \
+    uv pip install \
+        ".[messaging,cron,cli,mcp]" \
+        hindsight-client \
+        honcho && \
     chown agent:agent -R /opt/hermes && \
     ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes
 
