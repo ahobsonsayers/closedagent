@@ -70,17 +70,6 @@ For example, the opencode image uses:
 CMD opencode
 ```
 
-> [!IMPORTANT]
-> When overriding the `CMD` in your Dockerfile, always use **string format** (shell form), not **array format** (exec form). Array format bypasses the shell, which means environment variables set by the entrypoint won't be available to your command.
->
-> ```dockerfile
-> # Correct - shell form preserves environment variables
-> CMD opencode
->
-> # Wrong - exec form breaks environment variables
-> CMD ["opencode"]
-> ```
-
 If you do want to modify the `ENTRYPOINT`, you should use `tini` and the entrypoint script to ensure proper initialisation. For example:
 
 ```dockerfile
