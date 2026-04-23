@@ -83,4 +83,4 @@ ENV PATH=$HOME/.bun/bin:$PATH
 ENV PATH=$HOME/.local/bin:$PATH
 
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
-CMD ["bash"]
+CMD bash

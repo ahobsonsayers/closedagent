@@ -62,13 +62,24 @@ In this base image:
 
 It is recommended not to overwrite the `ENTRYPOINT` of this base image, as by default it will do some initialisation (such as installing additional packages - see below), and then run the command specified by `CMD`.
 
-The default `CMD` is `["bash"]`, meaning the container will start an interactive bash shell. To change what runs when the container starts, you should update `CMD`, not `ENTRYPOINT`.
+The default `CMD` is `bash`, meaning the container will start an interactive bash shell. To change what runs when the container starts, you should update `CMD`, not `ENTRYPOINT`.
 
 For example, the opencode image uses:
 
 ```dockerfile
-CMD ["opencode"]
+CMD opencode
 ```
+
+> [!IMPORTANT]
+> When overriding the `CMD` in your Dockerfile, always use **string format** (shell form), not **array format** (exec form). Array format bypasses the shell, which means environment variables set by the entrypoint won't be available to your command.
+>
+> ```dockerfile
+> # Correct - shell form preserves environment variables
+> CMD opencode
+>
+> # Wrong - exec form breaks environment variables
+> CMD ["opencode"]
+> ```
 
 If you do want to modify the `ENTRYPOINT`, you should use `tini` and the entrypoint script to ensure proper initialisation. For example:
 

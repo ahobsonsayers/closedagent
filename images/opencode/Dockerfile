@@ -17,4 +17,4 @@ RUN mkdir -p "$HOME/.config/opencode" && \
 VOLUME "$HOME/.config/opencode"
 VOLUME "$HOME/.local/share/opencode"
 
-CMD ["opencode"]
+CMD opencode

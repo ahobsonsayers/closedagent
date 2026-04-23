@@ -2,7 +2,7 @@ services:
   closedagent:
     container_name: closedagent
     image: arranhs/closedagent:latest # Runs /bin/bash by default
-    command: ["bash", "-c", "echo sleeping && sleep infinity"]
+    command: bash -c "echo sleeping && sleep infinity"
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
       - brew-cache:/home/agent/.cache/Homebrew # Persist brew cache
