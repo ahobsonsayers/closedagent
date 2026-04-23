@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Ensure image PATH is preserved for login shells
-echo "export PATH=\"$PATH\"" >> /etc/profile
+echo "export PATH=\"$PATH\"" | sudo tee -a /etc/profile > /dev/null
 
 echo "Fixing permissions"
 
@@ -22,7 +22,6 @@ fix_perms() {
 
 fix_perms "$HOME"/.cache
 fix_perms "$HOME"/.config
-fix_perms "$HOME"/.bun
 fix_perms "$HOME"/.local
 
 echo
