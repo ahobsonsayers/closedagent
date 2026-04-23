@@ -5,8 +5,8 @@ services:
     command: bash -c "echo sleeping && sleep infinity"
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
-      - brew-cache:/home/agent/.cache/Homebrew # Persist brew cache
-      - bun-cache:/home/agent/.bun/install/cache # Persist bun cache
+      - homebrew-cache:/home/agent/.cache/homebrew # Persist brew cache
+      - bun-cache:/home/agent/.cache/bun # Persist bun cache
       - uv-cache:/home/agent/.cache/uv # Persist uv cache
       - apt-cache:/var/cache/apt/archives # Persist apt cache
     environment:
@@ -16,7 +16,7 @@ services:
       - APT_PACKAGES="fastfetch micro"
 
 volumes:
-  brew-cache:
+  homebrew-cache:
   bun-cache:
   uv-cache:
   apt-cache:

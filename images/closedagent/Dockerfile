@@ -36,25 +36,6 @@ RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/agent && \
     chmod 0440 /etc/sudoers.d/agent
 
-# Copy entrypoint scripts
-COPY ./scripts/entrypoint.sh /entrypoint.sh
-COPY ./entrypoint.d /entrypoint.d
-
-RUN \ 
-    # Create some standard folders
-    mkdir -p \
-    "$HOME/.cache" \    
-    "$HOME/.config" \
-    "$HOME/.local/bin" \
-    "$HOME/.local/share" && \
-    # Fix permissions
-    chown -R agent:agent \
-    /entrypoint.sh \
-    /entrypoint.d \
-    "$HOME" && \
-    # Make entrypoint scripts executable
-    chmod +x /entrypoint.sh /entrypoint.d/*
-
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
     curl -L --progress-bar https://github.com/Homebrew/brew/tarball/main | \
@@ -65,22 +46,36 @@ RUN mkdir -p /home/linuxbrew/.linuxbrew && \
 ENV HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
 ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
+ENV HOMEBREW_CACHE="$HOME/.cache/homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
 
-# Change to "agent" user
-USER agent
-WORKDIR "$HOME"
+# Install bun and uv
+COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
+COPY --chmod=0755 --from=ghcr.io/astral-sh/uv:debian /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
 
-# Install bun
-RUN curl -fsSL https://bun.sh/install | bash && \
-    ln -s $HOME/.bun/bin/bun $HOME/.bun/bin/node
+ENV BUN_INSTALL_CACHE_DIR="$HOME/.cache/bun"
+ENV UV_CACHE_DIR="$HOME/.cache/bun"
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# Copy entrypoint scripts
+COPY ./scripts/entrypoint.sh /entrypoint.sh
+COPY ./entrypoint.d /entrypoint.d
 
-# Add directories to PATH
-ENV PATH=$HOME/.bun/bin:$PATH
+RUN \ 
+    # Create some standard folders
+    mkdir -p \
+      "$HOME/.cache" \    
+      "$HOME/.config" \
+      "$HOME/.local/bin" \
+      "$HOME/.local/share" && \
+    # Fix permissions
+    chmod -R 0755 /entrypoint.sh /entrypoint.d && \
+    chown -R agent:agent "$HOME"
+
 ENV PATH=$HOME/.local/bin:$PATH
+
+USER agent
+
+WORKDIR "$HOME"
 
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 CMD bash

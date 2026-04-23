@@ -3,7 +3,7 @@ set -euo pipefail
 
 for script in /entrypoint.d/*; do
   if [[ -f $script ]]; then
-    chmod +x "$script"
+    sudo chmod -R 0755 "$script" 2> /dev/null || true
     "$script"
   fi
 done
