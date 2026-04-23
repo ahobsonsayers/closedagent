@@ -8,7 +8,7 @@ env:
 tasks:
   format:
     cmds:
-      - shfmt -w -i 2 -s $SH_FILES
+      - shfmt --indent 2 --space-redirects --simplify --write $SH_FILES
       - chmod +x $SH_FILES
 
   lint:
