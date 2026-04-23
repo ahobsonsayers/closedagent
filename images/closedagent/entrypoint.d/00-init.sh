@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure image PATH is preserved for login shells
+echo "export PATH=\"$PATH\"" >> /etc/profile
+
+echo "Fixing permissions"
+
 fix_perms() {
   local path
   local user
@@ -15,9 +20,9 @@ fix_perms() {
     -exec chown "$user:$group" -- {} +
 }
 
-echo "Fixing permissions"
 fix_perms "$HOME"/.cache
 fix_perms "$HOME"/.config
 fix_perms "$HOME"/.bun
 fix_perms "$HOME"/.local
+
 echo
