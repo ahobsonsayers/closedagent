@@ -49,12 +49,16 @@ ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
 ENV HOMEBREW_CACHE="$HOME/.cache/homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
 
-# Install bun and uv
+# Install bun
 COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
-COPY --chmod=0755 --from=ghcr.io/astral-sh/uv:debian /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
-
+RUN ln -s /usr/local/bin/bun /usr/local/bin/node
+ENV BUN_INSTALL_GLOBAL_DIR="$HOME/.local/share/bun/install/global"
+ENV BUN_INSTALL_BIN="$HOME/.local/bin"
 ENV BUN_INSTALL_CACHE_DIR="$HOME/.cache/bun"
-ENV UV_CACHE_DIR="$HOME/.cache/bun"
+
+# Install uv
+COPY --chmod=0755 --from=ghcr.io/astral-sh/uv:debian /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
+ENV UV_CACHE_DIR="$HOME/.cache/uv"
 
 # Copy entrypoint scripts
 COPY ./scripts/entrypoint.sh /entrypoint.sh
