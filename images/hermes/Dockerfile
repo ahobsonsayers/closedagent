@@ -4,8 +4,6 @@ ARG HERMES_VERSION=2026.4.30
 
 ENV PYTHONUNBUFFERED=1
 
-USER root
-
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -23,8 +21,6 @@ RUN git clone --branch "v$HERMES_VERSION" --depth 1 --recursive \
     uv pip install --no-cache-dir hindsight-client honcho && \
     chown agent:agent -R /opt/hermes && \
     ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes
-
-USER agent
 
 WORKDIR $HOME
 

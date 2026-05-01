@@ -18,7 +18,6 @@ RUN apt-get update && \
     openssh-client \
     python3 \
     sed \
-    sudo \
     tar \
     tini \
     unzip \
@@ -31,10 +30,10 @@ RUN apt-get update && \
 RUN rm -rf /root
 
 # Create "agent" user and home
-# This user will have root access via passwordless sudo
-RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
-    echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/agent && \
-    chmod 0440 /etc/sudoers.d/agent
+RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home
+
+# Install gosu
+COPY --chmod=0755 --from=tianon/gosu:debian /gosu /usr/local/bin/gosu
 
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
@@ -76,8 +75,6 @@ RUN \
     chown -R agent:agent "$HOME"
 
 ENV PATH=$HOME/.local/bin:$PATH
-
-USER agent
 
 WORKDIR "$HOME"
 
