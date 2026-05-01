@@ -53,7 +53,7 @@ ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
 
 # Install docker cli and plugins (buildx, compose)
 COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/
-COPY --from=docker:cli /usr/libexec/docker/cli-plugins/ /usr/libexec/docker/cli-plugins/
+COPY --from=docker:cli /usr/local/libexec/docker/cli-plugins/ /usr/local/libexec/docker/cli-plugins/
 
 # Install bun
 COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
