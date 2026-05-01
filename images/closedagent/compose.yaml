@@ -5,6 +5,7 @@ services:
     command: bash -c "echo sleeping && sleep infinity"
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket (read-only)
       - homebrew-cache:/home/agent/.cache/homebrew # Persist brew cache
       - bun-cache:/home/agent/.cache/bun # Persist bun cache
       - uv-cache:/home/agent/.cache/uv # Persist uv cache

@@ -34,9 +34,7 @@ RUN rm -rf /root
 # This user will have root access via passwordless sudo
 RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/agent && \
-    chmod 0440 /etc/sudoers.d/agent && \
-    groupadd -f docker && \
-    usermod -aG docker agent
+    chmod 0440 /etc/sudoers.d/agent
 
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
