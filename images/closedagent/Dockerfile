@@ -34,7 +34,9 @@ RUN rm -rf /root
 # This user will have root access via passwordless sudo
 RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home && \
     echo "agent ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/agent && \
-    chmod 0440 /etc/sudoers.d/agent
+    chmod 0440 /etc/sudoers.d/agent && \
+    groupadd -f docker && \
+    usermod -aG docker agent
 
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
@@ -48,6 +50,10 @@ ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
 ENV HOMEBREW_CACHE="$HOME/.cache/homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
+
+# Install docker cli and plugins (buildx, compose)
+COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker:cli /usr/libexec/docker/cli-plugins/ /usr/libexec/docker/cli-plugins/
 
 # Install bun
 COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
