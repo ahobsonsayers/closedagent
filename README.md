@@ -35,7 +35,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun, python3, and uv.
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `npm` (tools), `uv` (python tools) or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
-- Does not run as root - agents shouldn't need to run as superuser. This being said, the image does have...
+- Does not run as root - agents shouldn't need to run as superuser. `gosu` is used to drop to the unprivileged `agent` user (UID 1000, GID 1000) before running the final command.
 - Passwordless sudo - for those rare occasions you _do_ need root.
 - Docker CLI - includes Docker CLI and plugins (buildx, compose) for interacting with docker if the socket is mounted.
 
@@ -56,7 +56,7 @@ To use this base image simply specify it in the `FROM` of your Dockerfile.
 
 In this base image:
 
-- User is `agent` with UID `1000` and GID `1000`
+- User is initially `root`, but `gosu` is used to drop to the unprivileged `agent` user (UID 1000, GID 1000) before running the final command
 - Home is `/home/agent`
 
 ### Entrypoint
@@ -76,12 +76,6 @@ If you do want to modify the `ENTRYPOINT`, you should use `tini` and the entrypo
 ```dockerfile
 ENTRYPOINT ["tini", "--", "/entrypoint.sh", "<command>"]
 ```
-
-### Installing `apt` packages during build
-
-If you need to install new packages from `apt` during image build, use `sudo`.
-
-Alternatively, change to root using `USER root` - but don't forget to change back to the `agent` user (using `USER agent`) once you no longer need root.
 
 ## Running
 
