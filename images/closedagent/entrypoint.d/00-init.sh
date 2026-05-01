@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Ensure image PATH is preserved for login shells
-echo "export PATH=\"$PATH\"" | sudo tee -a /etc/profile > /dev/null
+echo "export PATH=\"$PATH\"" | tee -a /etc/profile > /dev/null
 
 echo "Fixing permissions"
 
@@ -15,7 +15,7 @@ fix_perms() {
   user="$(id -u)"
   group="$(id -g)"
 
-  sudo find "$path" -mindepth 1 \
+  find "$path" -mindepth 1 \
     \( ! -user "$user" -o ! -group "$group" \) \
     -exec chown "$user:$group" -- {} +
 }

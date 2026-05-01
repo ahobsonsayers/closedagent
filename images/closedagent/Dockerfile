@@ -18,7 +18,6 @@ RUN apt-get update && \
     openssh-client \
     python3 \
     sed \
-    sudo \
     tar \
     tini \
     unzip \
