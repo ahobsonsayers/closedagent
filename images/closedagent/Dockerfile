@@ -35,6 +35,10 @@ RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home
 # Install gosu
 COPY --chmod=0755 --from=tianon/gosu:debian /gosu /usr/local/bin/gosu
 
+# Install docker cli and plugins (buildx, compose)
+COPY --chmod=0755 --from=docker:cli /usr/local/bin/docker /usr/local/bin/
+COPY --chmod=0755 --from=docker:cli /usr/local/libexec/docker/cli-plugins/ /usr/local/libexec/docker/cli-plugins/
+
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
     curl -L --progress-bar https://github.com/Homebrew/brew/tarball/main | \
@@ -47,10 +51,6 @@ ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
 ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
 ENV HOMEBREW_CACHE="$HOME/.cache/homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
-
-# Install docker cli and plugins (buildx, compose)
-COPY --from=docker:cli /usr/local/bin/docker /usr/local/bin/
-COPY --from=docker:cli /usr/local/libexec/docker/cli-plugins/ /usr/local/libexec/docker/cli-plugins/
 
 # Install bun
 COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
