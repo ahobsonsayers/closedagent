@@ -35,7 +35,8 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun, python3, and uv.
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `npm` (tools), `uv` (python tools) or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
-- Does not run as root - agents shouldn't need to run as superuser. `gosu` is used to drop to the unprivileged `agent` user before running the final command.
+- Does not run as root - agents shouldn't need to run as superuser. `gosu` is used to drop to the unprivileged `agent` user (UID 1000, GID 1000) before running the final command.
+- Docker CLI - includes Docker CLI and plugins (buildx, compose) for interacting with docker if the socket is mounted.
 
 ## Monorepo
 
@@ -93,18 +94,6 @@ Once the image is running it is possible to connect to the container and execute
 docker exec -it closedagent <your-command>
 ```
 
-### Mounting Credentials
-
-Most agents (including opencode) need access to your SSH keys for code operations:
-
-```yaml
-services:
-  agent:
-    volumes:
-      - ~/.gitconfig:/home/agent/.gitconfig     # Git configuration
-      - ~/.ssh:/home/agent/.ssh                 # SSH keys
-```
-
 ### Installing Additional Packages
 
 Any image based on this base image has the ability to install additional tools from `brew`, `npm`, `uv` (python tools) or `apt` at container startup by using environment variables.
@@ -142,6 +131,34 @@ volumes:
 These lines persist download caches (not full installations) for each package manager. Tools are still installed on each container start, but packages are fetched from cache when available.
 
 > **Tip:** It is recommended to only mount the caches as shown above. While you *can* mount the actual installation directories for faster startup (e.g., `/home/linuxbrew`, `/home/agent/.bun`), this may cause unforeseen or hard-to-debug issues.
+
+### Mounting Credentials
+
+Most agents (including opencode) need access to your SSH keys for code operations:
+
+```yaml
+services:
+  agent:
+    volumes:
+      - ~/.gitconfig:/home/agent/.gitconfig  # Git config
+      - ~/.ssh:/home/agent/.ssh              # SSH keys
+      - ~/.config/gh:/home/agent/.config/gh  # Github config
+```
+
+### Using Docker
+
+The image includes Docker CLI and plugins (buildx, compose). To use Docker inside the container, mount the Docker socket from the host:
+
+```yaml
+services:
+  agent:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Docker socket (read-only recommended)
+```
+
+> **Note:** Mounting with `:ro` (read-only) is recommended for security. The `agent` user is added to the `docker` group, so they can access the socket without root.
+
+With the socket mounted, you can run Docker commands inside the container:
 
 ## OpenCode Image
 

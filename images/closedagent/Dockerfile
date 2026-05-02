@@ -35,6 +35,10 @@ RUN useradd agent --uid 1000 --home-dir "$HOME" --create-home
 # Install gosu
 COPY --chmod=0755 --from=tianon/gosu:debian /gosu /usr/local/bin/gosu
 
+# Install docker cli and plugins (buildx, compose)
+COPY --chmod=0755 --from=docker:cli /usr/local/bin/docker /usr/local/bin/
+COPY --chmod=0755 --from=docker:cli /usr/local/libexec/docker/cli-plugins/ /usr/local/libexec/docker/cli-plugins/
+
 # Install homebrew (using tar for small size)
 RUN mkdir -p /home/linuxbrew/.linuxbrew && \
     curl -L --progress-bar https://github.com/Homebrew/brew/tarball/main | \
