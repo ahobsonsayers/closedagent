@@ -76,6 +76,25 @@ If you do want to modify the `ENTRYPOINT`, you should use `tini` and the entrypo
 ENTRYPOINT ["tini", "--", "/entrypoint.sh", "<command>"]
 ```
 
+#### Extending the Entrypoint
+
+The base image runs scripts in `/entrypoint.d/` before the final command. To add your own initialization:
+
+1. Copy your scripts to `entrypoint.d/` in your image
+2. Scripts run as **root** initially, then `gosu agent` drops to the agent user before the final command
+
+**Important:** If your scripts need to run as the non-root user, use `gosu agent <command>
+
+Example entrypoint script:
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Installing custom tools"
+gosu agent brew install mytool
+```
+
 ## Running
 
 To run agent images based on this base image, it is recommended to use docker compose. This simplifies much of the configuration/settings needed to run an image, such as the command, volumes and environment variables.
