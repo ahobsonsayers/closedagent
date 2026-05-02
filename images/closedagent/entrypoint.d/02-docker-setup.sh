@@ -10,7 +10,7 @@ echo "Docker socket mounted. Setting up permissions."
 DOCKER_SOCKET_GID=$(stat -c '%g' /var/run/docker.sock)
 
 # Create 'docker' group with gid of docker socket
-sudo groupadd -g "$DOCKER_SOCKET_GID" docker
+groupadd -g "$DOCKER_SOCKET_GID" docker || true
 
 # Add 'agent' user to 'docker' group
-sudo usermod -aG docker agent
+usermod -aG docker agent
