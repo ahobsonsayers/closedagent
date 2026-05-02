@@ -22,20 +22,20 @@ fi
 if [[ -n ${BREW_PACKAGES:-} ]]; then
   echo "Installing brew packages"
   # shellcheck disable=SC2046
-  brew install $(strip_quotes "$BREW_PACKAGES")
+  gosu agent brew install $(strip_quotes "$BREW_PACKAGES")
   echo
 fi
 
 if [[ -n ${NPM_TOOLS:-} ]]; then
   echo "Installing npm tools"
   # shellcheck disable=SC2046
-  bun install -g $(strip_quotes "$NPM_TOOLS")
+  gosu agent bun install -g $(strip_quotes "$NPM_TOOLS")
   echo
 fi
 
 if [[ -n ${PYTHON_TOOLS:-} ]]; then
   echo "Installing python tools"
   # shellcheck disable=SC2046
-  uv tool install $(strip_quotes "$PYTHON_TOOLS")
+  gosu agent uv tool install $(strip_quotes "$PYTHON_TOOLS")
   echo
 fi
