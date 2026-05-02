@@ -12,10 +12,10 @@ strip_quotes() {
 
 if [[ -n ${APT_PACKAGES:-} ]]; then
   echo "Installing apt packages"
-  sudo apt-get update
+  apt-get update
   # shellcheck disable=SC2046
-  sudo apt-get install -y $(strip_quotes "$APT_PACKAGES")
-  sudo rm -rf /var/lib/apt/lists/*
+  apt-get install -y $(strip_quotes "$APT_PACKAGES")
+  rm -rf /var/lib/apt/lists/*
   echo
 fi
 
