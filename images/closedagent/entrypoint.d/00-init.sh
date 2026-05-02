@@ -8,15 +8,10 @@ echo "Fixing permissions"
 
 fix_perms() {
   local path
-  local user
-  local group
-
   path="$1"
-  user="$(id -u)"
-  group="$(id -g)"
 
-  sudo find "$path" -mindepth 1 \
-    \( ! -user "$user" -o ! -group "$group" \) \
+  find "$path" -mindepth 1 \
+    \( ! -user agent -o ! -group agent \) \
     -exec chown "$user:$group" -- {} +
 }
 
