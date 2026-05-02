@@ -36,7 +36,6 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `npm` (tools), `uv` (python tools) or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
 - Does not run as root - agents shouldn't need to run as superuser. `gosu` is used to drop to the unprivileged `agent` user (UID 1000, GID 1000) before running the final command.
-- Passwordless sudo - for those rare occasions you _do_ need root.
 - Docker CLI - includes Docker CLI and plugins (buildx, compose) for interacting with docker if the socket is mounted.
 
 ## Monorepo
