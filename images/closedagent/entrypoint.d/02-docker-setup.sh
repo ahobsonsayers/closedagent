@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Check if docker socket is mounted
 # If socket is not mounted, skip setup
-[[ -S /var/run/docker.sock ]] || exit 0
+[[ -S /var/run/docker.sock ]] || return 0
 
 echo "Docker socket mounted. Setting up permissions."
 
