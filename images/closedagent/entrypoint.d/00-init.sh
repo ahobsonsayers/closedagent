@@ -9,17 +9,8 @@ echo "Fixing permissions"
 USER_ID=$(id -u agent)
 GROUP_ID=$(id -g agent)
 
-fix_perms() {
-  local path
-  path="$1"
-
-  find "$path" -mindepth 1 \
-    \( ! -user "$USER_ID" -o ! -group "$GROUP_ID" \) \
-    -exec chown "$USER_ID:$GROUP_ID" -- {} +
-}
-
-fix_perms "$HOME"/.cache
-fix_perms "$HOME"/.config
-fix_perms "$HOME"/.local
+chown -R "$USER_ID:$GROUP_ID" "$HOME/.cache"
+chown -R "$USER_ID:$GROUP_ID" "$HOME/.config"
+chown -R "$USER_ID:$GROUP_ID" "$HOME/.local"
 
 echo
