@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG HERMES_VERSION=2026.5.16
+ARG HERMES_VERSION=null
 
 ENV PYTHONUNBUFFERED=1
 
