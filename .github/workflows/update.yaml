@@ -1,0 +1,171 @@
+name: Update version
+
+on:
+  workflow_call:
+    inputs:
+      app-name:
+        description: App name (used in commit message)
+        type: string
+        required: true
+      dockerfile:
+        description: Path to the Dockerfile to update
+        type: string
+        required: true
+      version-arg:
+        description: Name of the ARG holding the version in the Dockerfile
+        type: string
+        required: true
+      version-source:
+        description: Source to fetch latest version from
+        type: string
+        required: true
+      version-source-command:
+        description: Shell command that prints the latest version to stdout (for command source)
+        type: string
+        required: false
+      version-source-github-repo:
+        description: GitHub repo in owner/repo format (for github and github-commit sources)
+        type: string
+        required: false
+      version-source-npm-package:
+        description: NPM package name (for npm source)
+        type: string
+        required: false
+      version-source-docker-image:
+        description: Docker image reference, e.g. ghcr.io/user/image or ghcr.io/user/image:tag (for docker-digest source)
+        type: string
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Buildx
+        if: inputs.version-source == 'docker-digest'
+        uses: docker/setup-buildx-action@v3
+
+      - name: Get current version
+        id: get-current-version
+        run: |
+          CURRENT_VERSION=$(grep "^ARG $VERSION_ARG=" "$DOCKERFILE" | cut -d '=' -f2)
+
+          echo "current=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "Current $APP_NAME Version: $CURRENT_VERSION"
+        env:
+          APP_NAME: ${{ inputs.app-name }}
+          DOCKERFILE: ${{ inputs.dockerfile }}
+          VERSION_ARG: ${{ inputs.version-arg }}
+
+      - name: Get latest version
+        id: get-latest-version
+        run: |
+          if [ -z "$VERSION_SOURCE" ]; then
+            echo "::error::version-source is empty or unset"
+            exit 1
+          fi
+
+          if [ "$VERSION_SOURCE" = command ]; then
+            if [ -z "$VERSION_SOURCE_COMMAND" ]; then
+              echo "::error::version-source-command is required when version-source is 'command'"
+              exit 1
+            fi
+
+            LATEST_VERSION=$(bash -c "$VERSION_SOURCE_COMMAND")
+
+          elif [ "$VERSION_SOURCE" = github ]; then
+            if [ -z "$VERSION_SOURCE_GITHUB_REPO" ]; then
+              echo "::error::version-source-github-repo is required when version-source is 'github'"
+              exit 1
+            fi
+
+            LATEST_VERSION=$(curl -s "https://api.github.com/repos/$VERSION_SOURCE_GITHUB_REPO/releases/latest" | jq -r '.tag_name')
+
+          elif [ "$VERSION_SOURCE" = github-commit ]; then
+            if [ -z "$VERSION_SOURCE_GITHUB_REPO" ]; then
+              echo "::error::version-source-github-repo is required when version-source is 'github-commit'"
+              exit 1
+            fi
+
+            DEFAULT_BRANCH=$(curl -s "https://api.github.com/repos/$VERSION_SOURCE_GITHUB_REPO" | jq -r '.default_branch')
+            LATEST_VERSION=$(curl -s "https://api.github.com/repos/$VERSION_SOURCE_GITHUB_REPO/commits/$DEFAULT_BRANCH" | jq -r '.sha')
+
+          elif [ "$VERSION_SOURCE" = npm ]; then
+            if [ -z "$VERSION_SOURCE_NPM_PACKAGE" ]; then
+              echo "::error::version-source-npm-package is required when version-source is 'npm'"
+              exit 1
+            fi
+
+            LATEST_VERSION=$(npm view "$VERSION_SOURCE_NPM_PACKAGE" version | tail -n 1)
+
+          elif [ "$VERSION_SOURCE" = docker-digest ]; then
+            if [ -z "$VERSION_SOURCE_DOCKER_IMAGE" ]; then
+              echo "::error::version-source-docker-image is required when version-source is 'docker-digest'"
+              exit 1
+            fi
+
+            LATEST_VERSION=$(docker buildx imagetools inspect "$VERSION_SOURCE_DOCKER_IMAGE" --format '{{.Digest}}')
+
+          else
+            echo "::error::Invalid version-source: $VERSION_SOURCE. Must be one of: command, github, github-commit, npm, docker-digest"
+            exit 1
+          fi
+
+          if [ -z "$LATEST_VERSION" ]; then
+            echo "::error::could not find latest version from source '$VERSION_SOURCE'"
+            exit 1
+          fi
+
+          echo "latest=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
+
+          echo "Latest $APP_NAME Version: $LATEST_VERSION"
+        env:
+          APP_NAME: ${{ inputs.app-name }}
+          VERSION_SOURCE: ${{ inputs.version-source }}
+          VERSION_SOURCE_COMMAND: ${{ inputs.version-source-command }}
+          VERSION_SOURCE_GITHUB_REPO: ${{ inputs.version-source-github-repo }}
+          VERSION_SOURCE_NPM_PACKAGE: ${{ inputs.version-source-npm-package }}
+          VERSION_SOURCE_DOCKER_IMAGE: ${{ inputs.version-source-docker-image }}
+
+      - name: Compare and update version
+        id: compare-update
+        run: |
+          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+            echo "needs-update=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs-update=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          CURRENT_VERSION: ${{ steps.get-current-version.outputs.current }}
+          LATEST_VERSION: ${{ steps.get-latest-version.outputs.latest }}
+
+      - name: Update Dockerfile
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          sed -i "s|^ARG $VERSION_ARG=.*|ARG $VERSION_ARG=$LATEST_VERSION|" "$DOCKERFILE"
+        env:
+          DOCKERFILE: ${{ inputs.dockerfile }}
+          VERSION_ARG: ${{ inputs.version-arg }}
+          LATEST_VERSION: ${{ steps.get-latest-version.outputs.latest }}
+
+      - name: Commit and push
+        if: steps.compare-update.outputs.needs-update == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add "$DOCKERFILE"
+          git commit -m "Update $APP_NAME to $LATEST_VERSION"
+          git push
+        env:
+          APP_NAME: ${{ inputs.app-name }}
+          DOCKERFILE: ${{ inputs.dockerfile }}
+          LATEST_VERSION: ${{ steps.get-latest-version.outputs.latest }}
