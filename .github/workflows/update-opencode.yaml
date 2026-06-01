@@ -11,7 +11,7 @@ permissions:
 jobs:
   update:
     name: Update version
-    uses: ./.github/workflows/update.yaml
+    uses: ahobsonsayers/github-workflows/.github/workflows/docker-update-app-version.yaml@main
     with:
       app-name: OpenCode
       dockerfile: images/opencode/Dockerfile

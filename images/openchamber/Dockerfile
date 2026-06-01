@@ -1,6 +1,6 @@
-FROM arranhs/opencode:latest
-
 ARG OPENCHAMBER_VERSION=1.11.7
+
+FROM arranhs/opencode:latest
 
 ENV OPENCHAMBER_HOST=0.0.0.0
 ENV OPENCHAMBER_PORT=3000
