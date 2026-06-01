@@ -3,6 +3,14 @@ name: Build and push Docker image
 on:
   workflow_call:
     inputs:
+      working-directory:
+        description: Build working directory
+        type: string
+        default: .
+      dockerfile:
+        description: Dockerfile path
+        type: string
+        default: Dockerfile
       image-name:
         description: Docker image name
         type: string
@@ -11,10 +19,6 @@ on:
         description: Docker image tags (newline separated)
         type: string
         required: true
-      context-path:
-        description: Build context path
-        type: string
-        default: .
 
 jobs:
   build:
@@ -31,7 +35,6 @@ jobs:
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             platform-slug: linux-arm64
-
 
     steps:
       - name: Checkout code
@@ -53,7 +56,8 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v6
         with:
-          context: ${{ inputs.context-path }}
+          context: ${{ inputs.working-directory }}
+          file: ${{ inputs.dockerfile }}
           platforms: ${{ matrix.platform }}
           tags: ${{ inputs.image-name }}
           cache-from: type=gha

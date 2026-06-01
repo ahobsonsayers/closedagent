@@ -1,4 +1,4 @@
-name: Build and push openchamber image
+name: Build & push openchamber image
 
 on:
   push:
@@ -35,36 +35,28 @@ jobs:
         id: get-tags
         run: |
           OPENCHAMBER_VERSION=$(
-            grep "^ARG OPENCHAMBER_VERSION=" images/openchamber/Dockerfile | 
+            grep "^ARG OPENCHAMBER_VERSION=" images/openchamber/Dockerfile |
             cut -d '=' -f2
           )
-
-          OPENCODE_VERSION=$(
-            grep "^FROM arranhs/opencode:" images/openchamber/Dockerfile |
-            cut -d ':' -f2
-          )
-
-          COMBINED_TAG="openchamber-$OPENCHAMBER_VERSION-opencode-$OPENCODE_VERSION"
 
           {
             echo "tags<<EOF"
             echo "latest"
             echo "$OPENCHAMBER_VERSION"
-            echo "$COMBINED_TAG"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
   
           echo "
           Output:
-          tags: latest, $OPENCHAMBER_VERSION, $COMBINED_TAG
+          tags: latest, $OPENCHAMBER_VERSION
           "
 
   build:
     name: Build image
-    needs: get-tags
     uses: ./.github/workflows/build.yaml
+    needs: get-tags
     secrets: inherit
     with:
+      working-directory: images/openchamber
       image-name: arranhs/openchamber
-      context-path: images/openchamber
       image-tags: ${{ needs.get-tags.outputs.tags }}

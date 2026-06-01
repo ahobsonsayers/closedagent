@@ -1,4 +1,4 @@
-name: Build and push opencode image
+name: Build & push opencode image
 
 on:
   push:
@@ -53,10 +53,10 @@ jobs:
 
   build:
     name: Build image
-    needs: get-tags
     uses: ./.github/workflows/build.yaml
+    needs: get-tags
     secrets: inherit
     with:
+      working-directory: images/opencode
       image-name: arranhs/opencode
-      context-path: images/opencode
       image-tags: ${{ needs.get-tags.outputs.tags }}

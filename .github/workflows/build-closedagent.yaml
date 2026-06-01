@@ -1,4 +1,4 @@
-name: Build and push closedagent image
+name: Build & push closedagent image
 
 on:
   push:
@@ -53,6 +53,6 @@ jobs:
     needs: get-tags
     secrets: inherit
     with:
+      working-directory: images/closedagent
       image-name: arranhs/closedagent
-      context-path: images/closedagent
       image-tags: ${{ needs.get-tags.outputs.tags }}
