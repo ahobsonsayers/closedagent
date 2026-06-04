@@ -7,9 +7,11 @@ This is a Docker image monorepo building sandboxed environments for AI agents.
 | Image | Description | Dockerfile |
 |-------|-------------|------------|
 | `closedagent` | Base image with dev tools | `images/closedagent/Dockerfile` |
-| `opencode` | opencode sandbox | `images/opencode/Dockerfile` |
-| `openchamber` | Web UI for opencode | `images/openchamber/Dockerfile` |
 | `hermes` | Hermes agent from Nous Research | `images/hermes/Dockerfile` |
+| `openchamber` | Web UI for opencode | `images/openchamber/Dockerfile` |
+| `opencode` | opencode sandbox | `images/opencode/Dockerfile` |
+| `paseo` | Paseo CLI on top of opencode or pi | `images/paseo/Dockerfile` |
+| `pi` | Pi coding agent | `images/pi/Dockerfile` |
 
 ## Commands
 

@@ -29,6 +29,10 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
     - [Environment Variables](#environment-variables)
 - [OpenChamber Image](#openchamber-image)
   - [Usage](#usage-1)
+- [Paseo Image](#paseo-image)
+  - [Usage](#usage-2)
+- [Pi Image](#pi-image)
+  - [Usage](#usage-3)
 
 ## Features
 
@@ -43,9 +47,11 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 This repository contains:
 
 - **closedagent**: Base Docker image with development tools
-- **opencode**: OpenCode AI sandboxed Docker image (extends closedagent)
-- **openchamber**: OpenChamber web UI for OpenCode (extends opencode)
 - **hermes**: Hermes Agent from Nous Research (extends closedagent)
+- **openchamber**: OpenChamber web UI for OpenCode (extends opencode)
+- **opencode**: OpenCode AI sandboxed Docker image (extends closedagent)
+- **paseo**: Paseo CLI on top of opencode or pi (extends opencode/pi)
+- **pi**: Pi coding agent (extends closedagent)
 
 All images are built using reusable GitHub Actions workflows.
 
@@ -261,3 +267,96 @@ The compose file mounts:
 - Your code workspace to `/home/agent/workspace`
 - Hermes config directory to `/home/agent/.hermes`
 - Git config and SSH keys for code operations
+
+## Paseo Image
+
+The `paseo` image is built on top of either `opencode` or `pi` and provides a sandboxed environment for running [Paseo](https://github.com/getpaseo/paseo) - a CLI for agent orchestration across Claude Code, Codex, Copilot, OpenCode, and Pi.
+
+### Usage
+
+Paseo images are tagged by their base agent:
+
+```bash
+# On top of opencode
+docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/paseo:latest-opencode
+
+# On top of pi
+docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/paseo:latest-pi
+```
+
+Using Docker Compose is recommended. An example compose file can be found at [`images/paseo/compose.yaml`](images/paseo/compose.yaml).
+
+The compose file mounts:
+- Your code workspace to `/home/agent/workspace`
+- Paseo config to `~/.paseo` (or override with `PASEO_HOME`)
+- Base agent config (opencode or pi) for persistence
+- Git config and SSH keys
+
+### Common Commands
+
+```bash
+# Start the daemon
+paseo daemon start
+
+# Run an agent with a specific provider
+paseo run --provider claude/opus-4.6 "implement user authentication"
+
+# List running agents
+paseo ls
+
+# Attach to an agent
+paseo attach <agent-id>
+
+# Send a follow-up task
+paseo send <agent-id> "also add tests"
+
+# Run on a remote daemon
+paseo --host workstation.local:6767 run "run the full test suite"
+```
+
+## Pi Image
+
+The `pi` image extends `closedagent` and provides a sandboxed environment for running [Pi](https://github.com/earendil-works/pi) - a minimal terminal coding harness.
+
+### Usage
+
+By default, the container runs the `pi` command.
+
+```bash
+docker run -it --rm -v "$(pwd):/home/agent/workspace" arranhs/pi:latest
+```
+
+Using Docker Compose is recommended for persistence. An example compose file can be found at [`images/pi/compose.yaml`](images/pi/compose.yaml).
+
+The compose file mounts:
+- Your code workspace to `/home/agent/workspace`
+- Pi config and sessions to `~/.pi`
+- Git config and SSH keys
+
+### Common Commands
+
+```bash
+# Interactive mode
+pi
+
+# Non-interactive (print mode)
+pi -p "Summarize this text"
+
+# Continue most recent session
+pi -c
+
+# Resume a previous session
+pi -r
+
+# Run with a specific provider and model
+pi --provider openai --model gpt-4o "Help me refactor"
+
+# Read-only mode (disable write tools)
+pi --tools read,grep,find,ls -p "Review the code"
+
+# Install a package
+pi install npm:@foo/pi-tools
+
+# Update pi and packages
+pi update
+```
