@@ -1,0 +1,19 @@
+services:
+  paseo:
+    container_name: paseo
+    image: arranhs/paseo:latest-opencode
+    # For pi:
+    # image: arranhs/paseo:latest-pi
+    restart: unless-stopped
+    ports:
+      - 6767:6767
+    volumes:
+      - ./workspace:/home/agent/workspace
+      - ~/.paseo:/home/agent/.paseo
+      # For opencode:
+      - ~/.config/opencode:/home/agent/.config/opencode
+      - ~/.local/share/opencode:/home/agent/.local/share/opencode
+      # For pi:
+      # - ~/.pi:/home/agent/.pi
+      - ~/.gitconfig:/home/agent/.gitconfig
+      - ~/.ssh:/home/agent/.ssh

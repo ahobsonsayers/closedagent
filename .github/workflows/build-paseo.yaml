@@ -1,0 +1,67 @@
+name: Build & push paseo images
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-paseo.yaml
+      - .github/workflows/update-paseo.yaml
+      - .github/workflows/build.yaml
+      - images/paseo/**
+  schedule:
+    - cron: 0 3 * * * # Everyday at 3am
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  get-version:
+    name: Get version
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        id: checkout-code
+        uses: actions/checkout@v6
+
+      - name: Get version
+        id: get-version
+        run: |
+          PASEO_VERSION=$(
+            grep "^ARG PASEO_VERSION=" images/paseo/Dockerfile | 
+            cut -d '=' -f2
+          )
+          echo "version=$PASEO_VERSION" >> "$GITHUB_OUTPUT"
+  
+          echo "
+          Output:
+          version: $PASEO_VERSION
+          "
+
+  build:
+    name: Build image
+    uses: ./.github/workflows/build.yaml
+    needs: get-version
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        agent:
+          - name: opencode
+            image: arranhs/opencode:latest
+          - name: pi
+            image: arranhs/pi:latest
+    with:
+      working-directory: images/paseo
+      image-name: arranhs/paseo
+      image-tags: |
+        latest-${{ matrix.agent.name }}
+        ${{ needs.get-version.outputs.version }}-${{ matrix.agent.name }}
+      build-args: AGENT_IMAGE=${{ matrix.agent.image }}
