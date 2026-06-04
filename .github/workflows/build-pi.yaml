@@ -1,0 +1,62 @@
+name: Build & push pi image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/build-pi.yaml
+      - .github/workflows/update-pi.yaml
+      - .github/workflows/build.yaml
+      - images/pi/**
+  schedule:
+    - cron: 0 2 * * * # Everyday at 2am
+  workflow_dispatch:
+    inputs:
+      no-cache:
+        description: No Cache
+        type: boolean
+        default: false
+
+jobs:
+  get-tags:
+    name: Get tags
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tags: ${{ steps.get-tags.outputs.tags }}
+
+    steps:
+      - name: Checkout code
+        id: checkout-code
+        uses: actions/checkout@v6
+
+      - name: Get tags
+        id: get-tags
+        run: |
+          PI_VERSION=$(
+            grep "^ARG PI_VERSION=" images/pi/Dockerfile | 
+            cut -d '=' -f2
+          )
+
+          {
+            echo "tags<<EOF"
+            echo "latest"
+            echo "$PI_VERSION"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+  
+          echo "
+          Output:
+          tags: latest, $PI_VERSION
+          "
+
+  build:
+    name: Build image
+    uses: ./.github/workflows/build.yaml
+    needs: get-tags
+    secrets: inherit
+    with:
+      working-directory: images/pi
+      image-name: arranhs/pi
+      image-tags: ${{ needs.get-tags.outputs.tags }}

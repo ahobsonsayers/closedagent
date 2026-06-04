@@ -1,0 +1,10 @@
+services:
+  pi:
+    container_name: pi
+    image: arranhs/pi:latest
+    restart: unless-stopped
+    volumes:
+      - ./workspace:/home/agent/workspace
+      - ~/.pi:/home/agent/.pi
+      - ~/.gitconfig:/home/agent/.gitconfig
+      - ~/.ssh:/home/agent/.ssh
