@@ -3,6 +3,8 @@ services:
     container_name: hermes
     image: arranhs/hermes:latest
     command: hermes gateway run
+    ports:
+      - 9119:9119
     restart: unless-stopped
     volumes:
       - ~/.hermes:/home/agent/.hermes
