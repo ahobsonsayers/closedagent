@@ -6,7 +6,8 @@ ARG PI_VERSION=0.78.1
 RUN bun install --global --ignore-scripts @earendil-works/pi-coding-agent@$PI_VERSION
 
 # Setup persistence
-RUN mkdir -p "$HOME/.pi"
+RUN mkdir -p "$HOME/.pi" && \
+    chown agent:agent -R "$HOME/.pi"
 
 VOLUME "$HOME/.pi"
 

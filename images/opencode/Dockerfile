@@ -11,8 +11,8 @@ ENV OPENCODE_CONFIG='{ \
     }'
 
 # Setup persistence
-RUN mkdir -p "$HOME/.config/opencode" && \
-    mkdir -p "$HOME/.local/share/opencode"
+RUN mkdir -p "$HOME/.config/opencode" "$HOME/.local/share/opencode" && \
+    chown agent:agent -R "$HOME/.config/opencode" "$HOME/.local/share/opencode"
 
 VOLUME "$HOME/.config/opencode"
 VOLUME "$HOME/.local/share/opencode"

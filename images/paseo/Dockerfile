@@ -10,7 +10,8 @@ ENV PASEO_LISTEN=0.0.0.0:6767
 RUN bun install --global @getpaseo/cli@$PASEO_VERSION
 
 # Setup persistence
-RUN mkdir -p "$HOME/.paseo"
+RUN mkdir -p "$HOME/.paseo" && \
+    chown agent:agent -R "$HOME/.paseo"
 
 VOLUME "$HOME/.paseo"
 

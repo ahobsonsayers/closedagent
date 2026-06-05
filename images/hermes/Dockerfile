@@ -42,4 +42,10 @@ COPY --from=frontend-builder --chown=agent:agent /hermes/hermes_cli/web_dist /op
 
 WORKDIR $HOME
 
+# Setup persistence
+RUN mkdir -p "$HOME/.hermes" && \
+    chown agent:agent -R "$HOME/.hermes"
+
+VOLUME "$HOME/.hermes"
+
 CMD ["hermes"]
