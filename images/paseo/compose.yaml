@@ -17,3 +17,8 @@ services:
       # - ~/.pi:/home/agent/.pi
       - ~/.gitconfig:/home/agent/.gitconfig
       - ~/.ssh:/home/agent/.ssh
+    environment: []
+      # See qll paseo environment variabkes here:
+      # https://paseo.sh/docs/configuration#common-env-vars
+      # - PASEO_HOME=
+      # - PASEO_PASSWORD=
