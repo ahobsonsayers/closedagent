@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Ensure image PATH is preserved for login shells
-echo "export PATH=\"$PATH\"" | tee -a /etc/profile > /dev/null
+echo "export PATH="$PATH"" | tee -a /etc/profile > /dev/null
 
-echo "Fixing permissions"
+echo "Fixing ownership"
 
-USER_ID=$(id -u agent)
-GROUP_ID=$(id -g agent)
+fast_chown() {
+  find "$1" ( ! -uid 1000 -o ! -gid 1000 ) -exec chown 1000:1000 {} +
+}
 
-chown -R "$USER_ID:$GROUP_ID" "$HOME/.cache"
-chown -R "$USER_ID:$GROUP_ID" "$HOME/.config"
-chown -R "$USER_ID:$GROUP_ID" "$HOME/.local"
+fast_chown "$HOME/.cache" || true
+fast_chown "$HOME/.config" || true
+fast_chown "$HOME/.local" || true
 
 echo
