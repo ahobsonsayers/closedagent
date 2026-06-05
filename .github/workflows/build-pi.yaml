@@ -11,11 +11,6 @@ on:
   schedule:
     - cron: 0 2 * * * # Everyday at 2am
   workflow_dispatch:
-    inputs:
-      no-cache:
-        description: No Cache
-        type: boolean
-        default: false
 
 jobs:
   get-tags:
@@ -59,3 +54,4 @@ jobs:
       working-directory: images/pi
       image-name: arranhs/pi
       image-tags: ${{ needs.get-tags.outputs.tags }}
+      build-cache: false

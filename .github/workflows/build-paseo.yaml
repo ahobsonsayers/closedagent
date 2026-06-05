@@ -11,11 +11,6 @@ on:
   schedule:
     - cron: 0 3 * * * # Everyday at 3am
   workflow_dispatch:
-    inputs:
-      no-cache:
-        description: No Cache
-        type: boolean
-        default: false
 
 jobs:
   get-version:
@@ -64,3 +59,4 @@ jobs:
         latest-${{ matrix.agent.name }}
         ${{ needs.get-version.outputs.version }}-${{ matrix.agent.name }}
       build-args: AGENT_IMAGE=${{ matrix.agent.image }}
+      build-cache: false

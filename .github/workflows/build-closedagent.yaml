@@ -10,11 +10,6 @@ on:
   schedule:
     - cron: 0 0 * * 0
   workflow_dispatch:
-    inputs:
-      no-cache:
-        description: No Cache
-        type: boolean
-        default: false
 
 jobs:
   get-tags:
@@ -55,3 +50,4 @@ jobs:
       working-directory: images/closedagent
       image-name: arranhs/closedagent
       image-tags: ${{ needs.get-tags.outputs.tags }}
+      build-cache: false
