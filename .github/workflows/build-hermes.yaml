@@ -7,7 +7,6 @@ on:
     paths:
       - .github/workflows/build-hermes.yaml
       - .github/workflows/update-hermes.yaml
-      - .github/workflows/build.yaml
       - images/hermes/**
   schedule:
     - cron: 0 2 * * * # Everyday at 2am
@@ -53,7 +52,7 @@ jobs:
 
   build:
     name: Build image
-    uses: ./.github/workflows/build.yaml
+    uses: ahobsonsayers/github-workflows/.github/workflows/docker-build-push.yaml@main
     needs: get-tags
     secrets: inherit
     with:
