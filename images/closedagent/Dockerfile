@@ -11,6 +11,7 @@ RUN apt-get update && \
     ca-certificates \
     coreutils \
     curl \
+    fd-find \
     findutils \
     git \
     grep \
