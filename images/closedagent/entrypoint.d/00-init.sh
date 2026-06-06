@@ -3,6 +3,12 @@ set -euo pipefail
 
 echo "export PATH=\"$PATH\"" | tee -a /etc/profile > /dev/null
 
+if [ "${SKIP_FIX_PERMISSIONS:-}" = "true" ]; then
+  echo "Skipping ownership fix (SKIP_FIX_PERMISSIONS=true)"
+  echo
+  exit 0
+fi
+
 echo "Fixing ownership"
 
 fast_chown() {
