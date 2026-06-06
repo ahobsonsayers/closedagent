@@ -1,4 +1,4 @@
-ARG HERMES_VERSION=v2026.5.29.2
+ARG HERMES_VERSION=v2026.6.5
 
 FROM oven/bun:alpine AS frontend-builder
 
