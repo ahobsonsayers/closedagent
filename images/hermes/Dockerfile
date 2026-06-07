@@ -1,6 +1,6 @@
 ARG HERMES_VERSION=v2026.6.5
 
-FROM oven/bun:alpine AS frontend-builder
+FROM node:alpine AS frontend-builder
 
 ARG HERMES_VERSION
 
@@ -11,8 +11,8 @@ RUN git clone --branch "$HERMES_VERSION" --depth 1 \
 
 WORKDIR /hermes/web
 
-RUN bun install --frozen-lockfile
-RUN bun run build
+RUN npm ci
+RUN npm run build
 
 FROM arranhs/closedagent:latest
 
