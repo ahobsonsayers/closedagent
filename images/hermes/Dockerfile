@@ -33,7 +33,7 @@ WORKDIR /opt/hermes
 RUN git clone --branch "$HERMES_VERSION" --depth 1 \
       https://github.com/NousResearch/hermes-agent.git . && \
     uv venv && \
-    uv pip install --no-cache-dir -e ".[messaging,cron,cli,mcp]" && \
+    uv pip install --no-cache-dir -e ".[cli,messaging,mcp,cron,web,pty]" && \
     uv pip install --no-cache-dir hindsight-client honcho && \
     chown agent:agent -R /opt/hermes && \
     ln -sf /opt/hermes/.venv/bin/hermes /usr/local/bin/hermes
@@ -42,9 +42,9 @@ COPY --from=frontend-builder --chown=agent:agent /hermes/hermes_cli/web_dist /op
 
 WORKDIR $HOME
 
-# Setup persistence
+# Setup home
 RUN mkdir -p "$HOME/.hermes" && \
-    chown agent:agent -R "$HOME/.hermes"
+    chown agent:agent -R "$HOME"
 
 VOLUME "$HOME/.hermes"
 
