@@ -10,9 +10,9 @@ ENV PASEO_HOSTNAMES=true
 # Install paseo
 RUN bun install --global @getpaseo/cli@$PASEO_VERSION
 
-# Setup persistence
+# Setup home
 RUN mkdir -p "$HOME/.paseo" && \
-    chown agent:agent -R "$HOME/.paseo"
+    chown agent:agent -R "$HOME"
 
 VOLUME "$HOME/.paseo"
 

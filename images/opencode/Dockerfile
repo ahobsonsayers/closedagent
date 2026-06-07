@@ -10,9 +10,9 @@ ENV OPENCODE_CONFIG='{ \
         "autoupdate": false \
     }'
 
-# Setup persistence
-RUN mkdir -p "$HOME/.config/opencode" "$HOME/.local/share/opencode" && \
-    chown agent:agent -R "$HOME/.config/opencode" "$HOME/.local/share/opencode"
+# Setup home
+RUN mkdir -p "$HOME/.config/opencode" "$HOME/.local/share/opencode"&& \
+    chown agent:agent -R "$HOME"
 
 VOLUME "$HOME/.config/opencode"
 VOLUME "$HOME/.local/share/opencode"
