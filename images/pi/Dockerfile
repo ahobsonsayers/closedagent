@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG PI_VERSION=0.79.2
+ARG PI_VERSION=0.79.3
 
 # Install pi
 RUN bun install --global --ignore-scripts @earendil-works/pi-coding-agent@$PI_VERSION
