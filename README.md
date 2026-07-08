@@ -36,7 +36,7 @@ This image is designed to be an easy-to-use, extensible, and batteries-included 
 
 ## Features
 
-- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also bun, python3, and uv.
+- Batteries included - comes with most of the standard tools that agents typically use and need. This includes core utils, git, and ssh as expected, but also nodejs, python3, and uv.
 - Extensible - Supports installation of extra tools, packages and programming languages from either `brew` (recommended), `npm` (tools), `uv` (python tools) or `apt` at runtime.
 - Surprisingly Small - despite all the above, the image is only ~200MB compressed.
 - Does not run as root - agents shouldn't need to run as superuser. `gosu` is used to drop to the unprivileged `agent` user (UID 1000, GID 1000) before running the final command.
@@ -148,14 +148,14 @@ This is done by the following volumes which can be seen in [`images/closedagent/
 ```yaml
 volumes:
   - brew-cache:/home/agent/.cache/Homebrew
-  - bun-cache:/home/agent/.bun/install/cache
+  - npm-cache:/home/agent/.cache/npm
   - uv-cache:/home/agent/.cache/uv
   - apt-cache:/var/cache/apt/archives
 ```
 
 These lines persist download caches (not full installations) for each package manager. Tools are still installed on each container start, but packages are fetched from cache when available.
 
-> **Tip:** It is recommended to only mount the caches as shown above. While you *can* mount the actual installation directories for faster startup (e.g., `/home/linuxbrew`, `/home/agent/.bun`), this may cause unforeseen or hard-to-debug issues.
+> **Tip:** It is recommended to only mount the caches as shown above. While you *can* mount the actual installation directories for faster startup (e.g., `/home/linuxbrew`), this may cause unforeseen or hard-to-debug issues.
 
 ### Mounting Credentials
 

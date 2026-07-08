@@ -29,7 +29,7 @@ fi
 if [[ -n ${NPM_TOOLS:-} ]]; then
   echo "Installing npm tools"
   # shellcheck disable=SC2046
-  gosu agent bun install -g $(strip_quotes "$NPM_TOOLS")
+  gosu agent npm install -g $(strip_quotes "$NPM_TOOLS")
   echo
 fi
 

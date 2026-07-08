@@ -3,7 +3,7 @@ FROM arranhs/closedagent:latest
 ARG OPENCODE_VERSION=1.17.15
 
 # Install opencode
-RUN bun install --global opencode-ai@$OPENCODE_VERSION
+RUN npm install --global opencode-ai@$OPENCODE_VERSION
 
 ENV OPENCODE_CONFIG='{ \
         "$schema": "https://opencode.ai/config.json", \

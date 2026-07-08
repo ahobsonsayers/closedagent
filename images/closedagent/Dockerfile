@@ -5,7 +5,7 @@ ENV HOME=/home/agent
 ENV TZ=Etc/UTC
 
 # Install apt packages
-RUN apt-get update && \
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
@@ -16,6 +16,7 @@ RUN apt-get update && \
     git \
     grep \
     jq \
+    nodejs \
     openssh-client \
     python3 \
     sed \
@@ -53,13 +54,6 @@ ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
 ENV HOMEBREW_CACHE="$HOME/.cache/homebrew"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:$PATH"
 
-# Install bun
-COPY --chmod=0755 --from=oven/bun:debian /usr/local/bin/bun /usr/local/bin/bunx /usr/local/bin/
-RUN ln -s /usr/local/bin/bun /usr/local/bin/node
-ENV BUN_INSTALL_GLOBAL_DIR="$HOME/.local/share/bun/install/global"
-ENV BUN_INSTALL_BIN="$HOME/.local/bin"
-ENV BUN_INSTALL_CACHE_DIR="$HOME/.cache/bun"
-
 # Install uv
 COPY --chmod=0755 --from=ghcr.io/astral-sh/uv:debian /usr/local/bin/uv /usr/local/bin/uvx /usr/local/bin/
 ENV UV_CACHE_DIR="$HOME/.cache/uv"
@@ -74,12 +68,15 @@ RUN \
       "$HOME/.cache" \    
       "$HOME/.config" \
       "$HOME/.local/bin" \
-      "$HOME/.local/share" && \
+      "$HOME/.local/share" \
+      "$HOME/.npm" && \
     # Fix permissions
     chmod -R 0755 /entrypoint.sh /entrypoint.d && \
     chown -R agent:agent "$HOME"
 
-ENV PATH=$HOME/.local/bin:$PATH
+ENV PATH=$HOME/.local/bin:$HOME/.npm/bin:$PATH
+ENV NPM_CONFIG_PREFIX=$HOME/.npm
+ENV NPM_CONFIG_CACHE=$HOME/.cache/npm
 
 WORKDIR "$HOME"
 

@@ -8,7 +8,7 @@ ENV PASEO_LISTEN=0.0.0.0:6767
 ENV PASEO_HOSTNAMES=true
 
 # Install paseo
-RUN bun install --global @getpaseo/cli@$PASEO_VERSION
+RUN npm install --global @getpaseo/cli@$PASEO_VERSION
 
 # Setup home
 RUN mkdir -p "$HOME/.paseo" && \

@@ -6,7 +6,7 @@ services:
     volumes:
       - ./workspace:/home/agent/workspace # Workspace files
       - homebrew-cache:/home/agent/.cache/homebrew # Persist brew cache
-      - bun-cache:/home/agent/.cache/bun # Persist bun cache
+      - npm-cache:/home/agent/.cache/npm # Persist npm cache
       - uv-cache:/home/agent/.cache/uv # Persist uv cache
       - apt-cache:/var/cache/apt/archives # Persist apt cache
     environment:
@@ -17,6 +17,6 @@ services:
 
 volumes:
   homebrew-cache:
-  bun-cache:
+  npm-cache:
   uv-cache:
   apt-cache:
