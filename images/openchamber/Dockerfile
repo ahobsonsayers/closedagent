@@ -14,4 +14,4 @@ RUN mkdir -p "$HOME/.config/openchamber" && \
 
 VOLUME "$HOME/.config/openchamber"
 
-CMD openchamber serve && openchamber logs
+CMD openchamber serve --foreground
