@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG OPENCODE_VERSION=1.18.14
+ARG OPENCODE_VERSION=1.18.15
 
 # Install opencode
 RUN npm install --global opencode-ai@$OPENCODE_VERSION
