@@ -5,7 +5,9 @@ ENV HOME=/home/agent
 ENV TZ=Etc/UTC
 
 # Install apt packages
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates curl && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
