@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG PI_VERSION=0.84.2
+ARG PI_VERSION=0.84.3
 
 # Install pi
 RUN npm install --global --ignore-scripts @earendil-works/pi-coding-agent@$PI_VERSION
