@@ -17,4 +17,4 @@ jobs:
       dockerfile: images/opencode/Dockerfile
       version-arg: OPENCODE_VERSION
       version-source: npm
-      version-source-npm-package: opencode-ai
+      version-source-npm-package: @opencode/cli

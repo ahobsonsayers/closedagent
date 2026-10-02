@@ -213,10 +213,9 @@ docker compose up -d
 
 #### Environment Variables
 
-When running the Web UI, the following env vars can be set to configure authentication.
+When running the Web UI, authentication is required and uses basic auth with the username `opencode`.
 
-- `OPENCODE_SERVER_USERNAME` - Username for Web UI authentication (Default: `opencode`)
-- `OPENCODE_SERVER_PASSWORD` - Password for Web UI authentication (Default: not set/no auth)
+- `OPENCODE_SERVER_PASSWORD` - Password for Web UI authentication (Default: randomly generated and printed in the server logs)
 
 ## OpenChamber Image
 

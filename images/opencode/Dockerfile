@@ -1,13 +1,13 @@
 FROM arranhs/closedagent:latest
 
-ARG OPENCODE_VERSION=1.18.34
+ARG OPENCODE_VERSION=2.0.21
 
 # Install opencode
-RUN npm install --global opencode-ai@$OPENCODE_VERSION
+RUN npm install --global @opencode/cli@$OPENCODE_VERSION
 
 ENV OPENCODE_CONFIG='{ \
         "$schema": "https://opencode.ai/config.json", \
-        "autoupdate": false \
+        "update": "disable" \
     }'
 
 # Setup home
