@@ -1,4 +1,4 @@
-ARG HERMES_VERSION=v0.21.7
+ARG HERMES_VERSION=v0.22.0
 
 FROM node:alpine AS frontend-builder
 
