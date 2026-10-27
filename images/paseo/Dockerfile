@@ -16,4 +16,4 @@ RUN mkdir -p "$HOME/.paseo" && \
 
 VOLUME "$HOME/.paseo"
 
-CMD ["paseo", "daemon", "start", "--foreground"]
+CMD ["paseo", "daemon", "run"]
