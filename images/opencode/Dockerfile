@@ -1,6 +1,6 @@
 FROM arranhs/closedagent:latest
 
-ARG OPENCODE_VERSION=2.2.1
+ARG OPENCODE_VERSION=2.2.2
 
 # Install opencode
 RUN npm install --global @opencode/cli@$OPENCODE_VERSION
